@@ -21,7 +21,7 @@ public class OrderControllerTest {
     @Test
     void findOrdersCount_Success() {
         MockMvcTester.MockMvcRequestBuilder response = mockMvcTester.get()
-                .uri("/orders/count");
+                .uri("/api/order/count");
         assertThat(response)
                 .hasStatusOk()
                 .bodyJson()
