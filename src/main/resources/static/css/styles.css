@@ -2,14 +2,17 @@
     --primary-color: #ABD7A8;
     --white-color: #fff;
     --black-color: #000;
+    --border-radius: 5px;
+    --secondary-color: #89c785;
 }
 
 * {
     font-family: Arial, sans-serif;
-    letter-spacing: 1px;
     margin: 0;
     padding: 0;
     background-color: #fff;
+    font-weight: normal;
+    font-size: 1rem;
 }
 
 body {
@@ -24,28 +27,46 @@ body {
             width: 40%;
             background-color: var(--primary-color);
         }
+
+        h1 {
+            font-weight: bolder;
+            color: var(--white-color);
+            margin-top: 2%;
+            margin-left: 7%;
+            font-size: 2rem;
+            background-color: var(--primary-color);
+        }
     }
 }
 
-.container {
+main {
     padding: 2%;
 }
 
-#amountOrders {
-    display: flex;
-    flex-direction: row-reverse;
-    margin-bottom: 2%;
-
-    p {
-        background-color: var(--primary-color);
-        border: 1px solid var(--white-color);
-        color: var(--white-color);
-        font-weight: bold;
-        padding: 1% 2%;
-        border-radius: 5px;
-    }
+/* a-tag */
+a {
+    text-decoration: underline;
+    color: var(--secondary-color);
 }
 
+/* Input-types */
+input[type="checkbox"] {
+    transform: scale(1.75);
+    margin: 10px;
+}
+
+/* Button */
+button {
+    padding: 1%;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Table */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -61,8 +82,37 @@ th {
     text-align: center;
     background-color: var(--primary-color);
     color: var(--white-color);
+    font-weight: bold;
 }
 
 td {
     text-align: right;
+    padding-right: 2%;
+}
+
+/* TV Screen */
+#amountOrders {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-bottom: 2%;
+
+    p {
+        background-color: var(--primary-color);
+        border: 1px solid var(--white-color);
+        color: var(--white-color);
+        padding: 1% 2%;
+        border-radius: var(--border-radius);
+        font-weight: bold;
+    }
+}
+
+/* TABLET */
+/* Order picking */
+.button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 2%;
+    :last-child {
+        margin-right: 2%;
+    }
 }
