@@ -1,4 +1,4 @@
-package be.vdab.scrumjava202504.orders;
+package be.vdab.scrumjava202504.Orders;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
