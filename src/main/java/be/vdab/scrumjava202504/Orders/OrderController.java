@@ -12,10 +12,10 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
-
+  
     @GetMapping("/count")
     public long getOrdersCount() {
         return orderService.getOrdersCount();
     }
 }
-
+}

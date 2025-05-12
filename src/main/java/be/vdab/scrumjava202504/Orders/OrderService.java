@@ -9,8 +9,9 @@ public class OrderService {
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
-
+  
     public long getOrdersCount() {
         return orderRepository.getOrdersCount();
     }
+}
 }
