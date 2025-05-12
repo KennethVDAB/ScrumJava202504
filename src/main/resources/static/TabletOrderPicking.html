@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="nl-BE">
+<head>
+    <meta charset="UTF-8">
+    <title>Bestellingen</title>
+    <script src="js/OrderPicking.js" type="module"></script>
+    <link href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1 id="logo">Prularia</h1>
+    <h2>Bestelling details</h2>
+  </header>
+
+  <main>
+    <table>
+      <thead>
+
+      <tr>
+        <th>Rek</th>
+        <th>Plaats</th>
+        <th>Naam</th>
+        <th>Aantal</th>
+        <th>In orde?</th>
+      </tr>
+      </thead>
+
+      <tbody id="tableBody">
+
+      <tr>
+        <th>1</th>
+        <th>2</th>
+        <th><a href="#">Stoel</a></th>
+        <th>25</th>
+        <th><input type="checkbox" ></th>
+      </tr>
+
+      <tr>
+        <th>1</th>
+        <th>15</th>
+        <th><a href="#">Tafel</a></th>
+        <th>5</th>
+        <th><input type="checkbox" checked></th>
+      </tr>
+
+      </tbody>
+    </table>
+  </main>
+
+  <footer>
+    <div class="button-container">
+      <button id="SaveBackBtn">Save and back</button>
+      <button id="finishedBtn">Afgewerkt</button>
+    </div>
+  </footer>
+</body>
+</html>
