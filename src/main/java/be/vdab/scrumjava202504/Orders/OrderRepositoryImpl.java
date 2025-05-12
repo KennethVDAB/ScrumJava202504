@@ -1,13 +1,15 @@
 package be.vdab.scrumjava202504.Orders;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
     private final JdbcClient jdbcClient;
+
+    public OrderRepositoryImpl(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
+    }
 
     public long getOrdersCount() {
         String sql = """
