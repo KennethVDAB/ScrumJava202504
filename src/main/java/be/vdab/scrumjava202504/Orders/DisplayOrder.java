@@ -1,4 +1,4 @@
-package be.vdab.scrumjava202504.bestellingen;
+package be.vdab.scrumjava202504.Orders;
 
 import java.math.BigDecimal;
 
