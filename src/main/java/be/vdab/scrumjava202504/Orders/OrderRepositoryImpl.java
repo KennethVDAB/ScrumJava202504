@@ -30,7 +30,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 SELECT
                     od.bestelId as id,
                     COUNT(od.artikelId) AS products,
-                    SUM(p.gewichtInGram) AS weight
+                    SUM(p.gewichtInGram) / 1000 AS weight
                 FROM
                     bestellijnen od
                 JOIN
