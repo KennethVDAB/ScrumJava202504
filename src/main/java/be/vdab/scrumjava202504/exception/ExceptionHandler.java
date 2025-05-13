@@ -14,4 +14,11 @@ public class ExceptionHandler {
         log.warn("Error: ", e);
         return new ErrorResponse(e.getMessage());
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundException(ProductNotFoundException ex) {
+        log.warn("Product not found: {}", ex.getMessage());
+        return new ErrorResponse(ex.getMessage());
+    }
 }

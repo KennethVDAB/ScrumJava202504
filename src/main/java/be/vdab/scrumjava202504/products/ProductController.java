@@ -1,6 +1,7 @@
 package be.vdab.scrumjava202504.products;
 
 import be.vdab.scrumjava202504.ProductDTO;
+import be.vdab.scrumjava202504.exception.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,11 +18,11 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/{artikelId}/plaatsen")
+    @GetMapping("/{artikelId}/places")
     public List<ProductDTO> getPlaceForArtikel(@PathVariable long artikelId) {
         var plaatsen = productService.getPlaceForArtikel(artikelId);
         if (plaatsen.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Geen locaties gevonden voor artikel " + artikelId);
+            throw new ProductNotFoundException(artikelId);
         }
         return plaatsen;
     }
