@@ -34,7 +34,7 @@ public class ProductDTO {
     /**
      * Returns the name of the product
      */
-    public String getNaam() {
+    public String getName() {
         return name;
     }
 
