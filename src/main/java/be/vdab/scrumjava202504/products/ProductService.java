@@ -10,7 +10,13 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ProductService {
 
-    public List<ProductDTO> getPlaceForArtikel(long artikelId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    private final ProductRepository productRepository;
+
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
+    public List<ProductDTO> getPlaceForArtikel (long artikelId) {
+        return productRepository.findByArtikelId(artikelId);
     }
 }
