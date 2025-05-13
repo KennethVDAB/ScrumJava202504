@@ -3,6 +3,8 @@ package be.vdab.scrumjava202504.Orders;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class OrderRepositoryImpl implements OrderRepository {
     private final JdbcClient jdbcClient;
@@ -21,5 +23,29 @@ public class OrderRepositoryImpl implements OrderRepository {
         return jdbcClient.sql(sql)
                 .query(Long.class)
                 .single();
+    }
+
+    public List<DisplayOrder> getDisplayOrders() {
+        String sql = """
+                SELECT
+                    od.bestelId as id,
+                    COUNT(od.artikelId) AS products,
+                    SUM(p.gewichtInGram) / 1000 AS weight
+                FROM
+                    bestellijnen od
+                JOIN
+                    artikelen p ON od.artikelId = p.artikelId
+                JOIN
+                	bestellingen b on b.bestelId = od.bestelId
+                WHERE b.betaald = 1
+                GROUP BY
+                    od.bestelId
+                ORDER BY
+                    b.besteldatum
+                LIMIT 5
+                """;
+        return jdbcClient.sql(sql)
+                .query(DisplayOrder.class)
+                .list();
     }
 }
