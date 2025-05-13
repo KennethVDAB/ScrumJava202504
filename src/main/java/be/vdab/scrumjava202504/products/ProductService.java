@@ -1,6 +1,5 @@
 package be.vdab.scrumjava202504.products;
 
-import be.vdab.scrumjava202504.ProductDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

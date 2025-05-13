@@ -1,7 +1,5 @@
 package be.vdab.scrumjava202504.products;
 
-import be.vdab.scrumjava202504.ProductDTO;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +15,7 @@ public class ProductRepository {
 
     public List<ProductDTO> findByArtikelId(long artikelId) {
         var sql = """
-                SELECT place.rij,place.rek,place.aantal, artikelen.naam AS artikelName
+                SELECT place.rij AS shelf, place.rek AS position, place.aantal AS quantity, artikel.naam AS name
                 FROM MagazijnPlaatsen AS place
                 INNER JOIN Artikelen AS artikel ON place.artikelId = artikel.artikelId
                 WHERE place.artikelId = ?

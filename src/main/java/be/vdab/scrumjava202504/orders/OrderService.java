@@ -1,4 +1,4 @@
-package be.vdab.scrumjava202504.Orders;
+package be.vdab.scrumjava202504.orders;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +20,10 @@ public class OrderService {
 
     public List<DisplayOrder> getDisplayOrders() {
         return orderRepository.getDisplayOrders();
+    }
+
+    public List<PickingItem> getOrderDetailsByOrderId(long orderId) {
+        throw new UnsupportedOperationException();
     }
 }
 

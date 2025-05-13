@@ -1,4 +1,4 @@
-package be.vdab.scrumjava202504.Orders;
+package be.vdab.scrumjava202504.orders;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
