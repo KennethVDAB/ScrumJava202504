@@ -19,9 +19,9 @@ public class ProductRepository {
         var sql = """
                 SELECT place.rij,place.rek,place.aantal, artikelen.naam AS artikelName
                 FROM MagazijnPlaatsen AS place
-                INNER JOIN Artikel AS artikel ON place.artikelId = artikel.artikelId
+                INNER JOIN Artikelen AS artikel ON place.artikelId = artikel.artikelId
                 WHERE place.artikelId = ?
-                ORDER BY place.aantal
+                ORDER BY place.aantal DESC 
                 """;
         return jdbcClient.sql(sql)
                 .param(artikelId)
