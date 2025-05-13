@@ -5,12 +5,12 @@ import java.math.BigDecimal;
 /**
  * Represents a display order with an ID, number of products, and total weight to be displayed on the screen.
  */
-public class DisplayBestelling {
+public class DisplayOrder {
     private final long id;
     private final int products;
     private final BigDecimal weight;
 
-    public DisplayBestelling(long id, int products, BigDecimal weight) {
+    public DisplayOrder(long id, int products, BigDecimal weight) {
         this.id = id;
         this.products = products;
         this.weight = weight;
