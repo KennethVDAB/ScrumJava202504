@@ -51,7 +51,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     public List<OrderDetails> getOrderDetailsByOrderId(long orderId) {
         String sql = """
-                SELECT bestellijnid AS orderId, bestelid AS orderId, artikelid AS prodcutid, aantalBesteld AS quantityOrder
+                SELECT bestellijnid AS orderDetailId, bestelid AS orderId, artikelid AS productid, aantalBesteld AS quantityOrder
                 FROM bestellijnen
                 WHERE bestelid = ?
                 """;
