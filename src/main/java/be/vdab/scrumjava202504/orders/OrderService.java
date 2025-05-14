@@ -47,7 +47,7 @@ public class OrderService {
             List<ProductDTO> allPossibleProductLocations = productRepository.findByArtikelId(productId);
 
             ProductDTO bestLocation = allPossibleProductLocations.stream()
-                    .min(Comparator.comparingInt(product -> calculateContextualStepValue(product, allPossibleProductLocations, orderedProductsWithQuantity)))
+                    .min(Comparator.comparingInt(oneProductLocation -> calculateContextualStepValue(oneProductLocation, allPossibleProductLocations, orderedProductsWithQuantity)))
                     .orElse(null);
 
             if (bestLocation != null) {
@@ -70,12 +70,12 @@ public class OrderService {
         return sortedProducts;
     }
 
-    private int calculateContextualStepValue(ProductDTO toEvaluateLocation, List<ProductDTO> productLocationsOfOneProduct, Map<Long, BigDecimal> allProductsInOrderWithQuantity) {
+    private int calculateContextualStepValue(ProductDTO toEvaluateLocation, List<ProductDTO> productLocationsOfOneProduct, Map<Long, BigDecimal> orderedProductsWithQuantity) {
         int shelfValue = LetterToNumber.getNumberOfChar(toEvaluateLocation.getShelf().charAt(0));
         int positionValue = toEvaluateLocation.getPosition();
 
         List<ProductDTO> relevantLocations = productLocationsOfOneProduct.stream()
-                .filter(productLocationOfOneProduct -> allProductsInOrderWithQuantity.containsKey(productLocationOfOneProduct.getProductId()) && !productLocationOfOneProduct.equals(toEvaluateLocation))
+                .filter(productLocationOfOneProduct -> orderedProductsWithQuantity.containsKey((long) productLocationOfOneProduct.getProductId()) && !productLocationOfOneProduct.equals(toEvaluateLocation))
                 .toList();
 
         int totalDistance = relevantLocations.stream()
