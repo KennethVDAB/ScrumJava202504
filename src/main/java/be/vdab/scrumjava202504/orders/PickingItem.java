@@ -4,14 +4,16 @@ public class PickingItem {
     private String shelf;
     private int position;
     private String name;
-    private int quantity;
+    private int quantityOrdered;
+    private int productId;
     private boolean picked = false;
 
-    public PickingItem(String shelf, int position, String name, int quantity) {
+    public PickingItem(String shelf, int position, String name, int quantity, int productId) {
         this.shelf = shelf;
         this.position = position;
         this.name = name;
-        this.quantity = quantity;
+        this.quantityOrdered = quantity;
+        this.productId = productId;
     }
 
     public int getPosition() {
@@ -26,8 +28,8 @@ public class PickingItem {
         return name;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public int getQuantityOrdered() {
+        return quantityOrdered;
     }
 
     public boolean isPicked() {

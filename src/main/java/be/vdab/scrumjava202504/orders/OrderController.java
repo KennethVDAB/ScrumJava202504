@@ -29,5 +29,11 @@ public class OrderController {
     public List<DisplayOrder> getDisplayOrders() {
         return orderService.getDisplayOrders();
     }
+
+    //TODO: REMOVE LATER
+    @GetMapping("/test")
+    public Object test() {
+        return orderService.getOrderDetailsByOrderId(1);
+    }
 }
 
