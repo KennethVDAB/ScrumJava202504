@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Tv Scherm</title>
-    <script src="js/tv.js" type="module"></script>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <script src="js/tvScreen.js" type="module"></script>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -12,8 +13,9 @@
   </header>
 
   <main>
-      <div id="amountOrders"><p>1/5 Bestellingen</p></div>
-      <table>
+      <div id="amountOrders"><p></p></div>
+
+      <table id="tableOrders">
           <thead>
           <tr>
               <th>Bestelnummer</th>
@@ -23,33 +25,12 @@
           </tr>
           </thead>
           <tbody id="tableBody">
-          <tr>
-              <td>0001</td>
-              <td>1</td>
-              <td>1 kg</td>
-          </tr>
-          <tr>
-              <td>0002</td>
-              <td>1</td>
-              <td>1 kg</td>
-          </tr>
-          <tr>
-              <td>0003</td>
-              <td>1</td>
-              <td>1 kg</td>
-          </tr>
-          <tr>
-              <td>0004</td>
-              <td>1</td>
-              <td>1 kg</td>
-          </tr>
-          <tr>
-              <td>0005</td>
-              <td>1</td>
-              <td>1 kg</td>
-          </tr>
           </tbody>
       </table>
+
+      <p id="noOrdersFound" hidden>Er zijn op dit moment geen bestellingen.</p>
+
+      <p id="error" hidden>Er is een probleem, gelieve contact op te nemen met ...</p>
   </main>
 </body>
 </html>
