@@ -9,12 +9,14 @@ public class ProductDTO {
     private int position;
     private String name;
     private int quantity;
+    private int productId;
 
-    public ProductDTO(String shelf, int position, String name, int quantity) {
+    public ProductDTO(String shelf, int position, String name, int quantity, int productId) {
         this.shelf = shelf;
         this.position = position;
         this.name = name;
         this.quantity = quantity;
+        this.productId = productId;
     }
 
     /**
@@ -43,6 +45,13 @@ public class ProductDTO {
      */
     public int getQuantity() {
         return quantity;
+    }
+
+    /**
+     * Returns the productId of the product
+     */
+    public int getProductId() {
+        return productId;
     }
 
 }
