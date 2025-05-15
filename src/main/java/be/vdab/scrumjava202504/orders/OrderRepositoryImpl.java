@@ -1,4 +1,4 @@
-package be.vdab.scrumjava202504.Orders;
+package be.vdab.scrumjava202504.orders;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -46,6 +46,19 @@ public class OrderRepositoryImpl implements OrderRepository {
                 """;
         return jdbcClient.sql(sql)
                 .query(DisplayOrder.class)
+                .list();
+    }
+
+    public List<OrderDetails> getOrderDetailsByOrderId(long orderId) {
+        String sql = """
+                SELECT bestellijnid AS orderDetailId, bestelid AS orderId, artikelid AS productid, aantalBesteld AS quantityOrder
+                FROM bestellijnen
+                WHERE bestelid = ?
+                """;
+
+        return jdbcClient.sql(sql)
+                .param(orderId)
+                .query(OrderDetails.class)
                 .list();
     }
 }

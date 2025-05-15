@@ -1,4 +1,4 @@
-package be.vdab.scrumjava202504;
+package be.vdab.scrumjava202504.products;
 
 /**
  * Represents an order with all the necessary information for pickup
@@ -9,12 +9,14 @@ public class ProductDTO {
     private int position;
     private String name;
     private int quantity;
+    private int productId;
 
-    public ProductDTO(String shelf, int position, String naam, int quantity) {
+    public ProductDTO(String shelf, int position, String name, int quantity, int productId) {
         this.shelf = shelf;
         this.position = position;
-        this.name = naam;
+        this.name = name;
         this.quantity = quantity;
+        this.productId = productId;
     }
 
     /**
@@ -43,6 +45,17 @@ public class ProductDTO {
      */
     public int getQuantity() {
         return quantity;
+    }
+
+    /**
+     * Returns the productId of the product
+     */
+    public int getProductId() {
+        return productId;
+    }
+
+    public String toString() {
+    	return "ProductDTO [shelf=" + shelf + ", position=" + position + ", name=" + name + ", quantity=" + quantity + ", productId=" + productId + "]";
     }
 
 }

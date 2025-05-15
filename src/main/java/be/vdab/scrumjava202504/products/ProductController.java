@@ -1,10 +1,7 @@
 package be.vdab.scrumjava202504.products;
 
-import be.vdab.scrumjava202504.ProductDTO;
 import be.vdab.scrumjava202504.exception.ProductNotFoundException;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 

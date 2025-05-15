@@ -1,4 +1,4 @@
-package be.vdab.scrumjava202504.Orders;
+package be.vdab.scrumjava202504.orders;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
