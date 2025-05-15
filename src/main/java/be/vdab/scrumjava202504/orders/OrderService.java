@@ -10,47 +10,87 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The {@code OrderService} class provides methods to retrieve order details and to generate
+ * picking instructions for orders based on product availability and route optimization.
+ * <p>
+ * The service calculates an efficient route cost for each product location by combining a shelf cost
+ * (derived from converting the shelf letter into a numeric value via {@code LetterToNumber}) and a position cost
+ * (representing the steps required to travel to and from the location).
+ * <p>
+ * The route cost is computed with the following formula:
+ * <pre>
+ *    routeCost = (LetterToNumber.getNumberOfChar(shelfLetter) * 10) + (2 * position)
+ * </pre>
+ * This allows the system to sort product locations and pick items in the most efficient sequence.
+ */
 @Service
 @Transactional(readOnly = true)
 public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
 
+    /**
+     * Constructs a new {@code OrderService} with the specified order and product repositories.
+     *
+     * @param orderRepository   the repository used to retrieve order details
+     * @param productRepository the repository used to retrieve product details and locations
+     */
     public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
     }
 
+    /**
+     * Retrieves the total number of orders.
+     *
+     * @return the count of orders as a {@code long} value
+     */
     public long getOrdersCount() {
         return orderRepository.getOrdersCount();
     }
 
+    /**
+     * Retrieves a list of orders for display purposes.
+     *
+     * @return a list of {@code DisplayOrder} objects
+     */
     public List<DisplayOrder> getDisplayOrders() {
         return orderRepository.getDisplayOrders();
     }
 
+    /**
+     * Retrieves detailed picking instructions for a specified order.
+     * <p>
+     * For each ordered product, this method retrieves the available locations,
+     * calculates the optimal picking instructions based on route cost (including both shelf and position factors),
+     * and returns an organized list of {@code PickingItem} objects sorted by shelf and position.
+     *
+     * @param orderId the identifier of the order for which picking details are to be retrieved
+     * @return a list of {@code PickingItem} objects, each representing a product location and the quantity to pick
+     */
     public List<PickingItem> getOrderDetailsByOrderId(long orderId) {
-        // Haal per order de producten en hun hoeveelheid op
+        // Retrieve the products and their ordered quantities for the given order.
         Map<Long, BigDecimal> orderedProductsWithQuantity = orderRepository.getOrderDetailsByOrderId(orderId)
                 .stream()
                 .collect(Collectors.toMap(OrderDetails::getProductId, OrderDetails::getQuantityOrder));
 
         List<PickingItem> result = new ArrayList<>();
 
-        // Voor elk besteld product werken we de picking-instructies uit op basis van de meest efficiënte route.
+        // For each ordered product, generate picking instructions based on the most efficient route.
         orderedProductsWithQuantity.forEach((productId, quantityBigDecimal) -> {
             int quantityAsked = quantityBigDecimal.intValue();
 
-            // Haal alle mogelijke locaties voor dit product op
+            // Retrieve all possible locations for this product.
             List<ProductDTO> candidateLocations = productRepository.findByArtikelId(productId);
 
-            // Bereken de picking items voor dit product met de nieuwe route cost methode
+            // Calculate the picking items for this product using the new route cost method.
             List<PickingItem> pickingItems = getEfficientPickingItemsForProduct(productId, quantityAsked, candidateLocations);
 
             result.addAll(pickingItems);
         });
 
-        // Sorteer de uiteindelijke picking lijst op rek en positie zodat de plukker een overzichtelijke volgorde krijgt.
+        // Sort the final picking list by shelf and then by position to provide the picker with an organized route.
         return result.stream()
                 .sorted(Comparator.comparing(PickingItem::getShelf)
                         .thenComparingInt(PickingItem::getPosition))
@@ -58,27 +98,28 @@ public class OrderService {
     }
 
     /**
-     * Berekent voor een gegeven product de picking items op basis van de beschikbaarheid én
-     * de route kost (gebaseerd op het aantal stappen). Eerst worden alle locaties gesorteerd op
-     * de berekende round-trip kosten. Vervolgens wordt cumulatief gecheckt of de verzamelde hoeveelheid
-     * aan de optimale locaties het gewenste aantal bereikt.
+     * Calculates the picking items for a specific product based on availability and route cost optimization.
+     * <p>
+     * This method sorts the candidate locations by their computed round-trip route cost,
+     * then iterates through the sorted list and cumulatively selects quantities from each location until
+     * the requested quantity is met.
      *
-     * @param productId         Het product-ID.
-     * @param quantityAsked     De gevraagde hoeveelheid voor dit product.
-     * @param candidateLocations  De lijst met beschikbare locaties voor dit product.
-     * @return Een lijst met PickingItem-objecten voor de order.
+     * @param productId          the product identifier
+     * @param quantityAsked      the requested quantity for the product
+     * @param candidateLocations the list of available product locations
+     * @return a list of {@code PickingItem} objects representing the selected product locations and the picked quantity
      */
     private List<PickingItem> getEfficientPickingItemsForProduct(long productId, int quantityAsked, List<ProductDTO> candidateLocations) {
-        // Sorteer eerst op basis van de round-trip route cost.
+        // First, sort the locations based on the computed round-trip route cost.
         List<ProductDTO> sortedLocations = candidateLocations.stream()
                 .sorted(Comparator.comparingInt(this::calculateRouteCost))
                 .collect(Collectors.toList());
 
         int remaining = quantityAsked;
-
         List<PickingItem> pickedItems = new ArrayList<>();
 
-        // Ga de locaties af van de laagste naar de hoogste route kost totdat de gevraagde hoeveelheid is bereikt.
+        // Iterate through the sorted locations, starting with the location with the lowest route cost,
+        // until the requested quantity is reached.
         for (ProductDTO candidate : sortedLocations) {
             if (remaining <= 0) {
                 break;
@@ -100,24 +141,37 @@ public class OrderService {
             }
         }
 
-        // Eventueel kun je hier een controle toevoegen om te signaleren dat niet aan de gevraagde hoeveelheid is voldaan.
+        // Optionally, you can add error handling here if the available stock is insufficient.
         return pickedItems;
     }
 
     /**
-     * Bereken de round-trip route cost voor een locatie.
+     * Calculates the round-trip route cost for a given product location.
+     * <p>
+     * The route cost is calculated by combining:
+     * <ul>
+     *   <li>a shelf cost, derived by converting the shelf letter to a numeric value using {@code LetterToNumber}
+     *       and multiplying by 10, and</li>
+     *   <li>a position cost, which is computed as 2 times the position value (representing the go-and-return trip).</li>
+     * </ul>
+     * For example, for a location "A40" (where A translates to 1), the calculation would be:
+     * <pre>
+     *    shelfCost = 1 * 10 = 10
+     *    positionCost = 2 * 40 = 80
+     *    routeCost = 10 + 80 = 90
+     * </pre>
      *
-     * @param location De ProductDTO-locatie.
-     * @return De berekende route cost (in stappen).
+     * @param location the {@code ProductDTO} object representing the product location
+     * @return the computed route cost (in steps) as an {@code int}
      */
     private int calculateRouteCost(ProductDTO location) {
-        // Haal de cijferwaarde op van de rek-letter via LetterToNumber
+        // Retrieve the numeric value of the shelf letter using LetterToNumber.
         int shelfFactor = LetterToNumber.getNumberOfChar(location.getShelf().charAt(0));
 
-        // Bereken de rek-kost: stel dat elk rek-niveau 10 stappen extra vereist
+        // Calculate the shelf cost (each shelf level adds 10 steps).
         int shelfCost = shelfFactor * 10;
 
-        // Bereken de positie-kost (heen en terug)
+        // Calculate the position cost (steps to and from the location).
         int positionCost = 2 * location.getPosition();
 
         return shelfCost + positionCost;
