@@ -33,7 +33,6 @@ public class OrderService {
     }
 
     public List<PickingItem> getOrderDetailsByOrderId(long orderId) {
-        // Stap 1: Haal producten op met gevraagde hoeveelheid
         Map<Long, BigDecimal> orderedProductsWithQuantity = orderRepository.getOrderDetailsByOrderId(orderId)
                 .stream()
                 .collect(Collectors.toMap(OrderDetails::getProductId, OrderDetails::getQuantityOrder));
@@ -41,13 +40,13 @@ public class OrderService {
         List<PickingItem> notOrderedPickingRoute = new ArrayList<>();
 
         for (Map.Entry<Long, BigDecimal> entry : orderedProductsWithQuantity.entrySet()) {
-            Integer productId = entry.getKey().intValue();
+            int productId = entry.getKey().intValue();
             BigDecimal quantityAsked = entry.getValue();
 
             List<ProductDTO> allPossibleProductLocations = productRepository.findByArtikelId(productId);
 
             ProductDTO bestLocation = allPossibleProductLocations.stream()
-                    .min(Comparator.comparingInt(oneProductLocation -> calculateContextualStepValue(oneProductLocation, allPossibleProductLocations, orderedProductsWithQuantity)))
+                    .min(Comparator.comparingInt(product -> calculateContextualStepValue(product, orderedProductsWithQuantity)))
                     .orElse(null);
 
             if (bestLocation != null) {
@@ -62,21 +61,26 @@ public class OrderService {
             }
         }
 
-        // Stap 3: Sorteer de producten correct op rij en positie
         List<PickingItem> sortedProducts = notOrderedPickingRoute.stream()
-                .sorted(Comparator.comparingInt(p -> LetterToNumber.getNumberOfChar(p.getShelf().charAt(0)) * 100 + p.getPosition()))
+                .sorted(Comparator.comparingInt(p -> LetterToNumber.getNumberOfChar(p.getShelf().charAt(0)) + p.getPosition()))
                 .collect(Collectors.toList());
 
         return sortedProducts;
     }
 
-    private int calculateContextualStepValue(ProductDTO toEvaluateLocation, List<ProductDTO> productLocationsOfOneProduct, Map<Long, BigDecimal> orderedProductsWithQuantity) {
+    private int calculateContextualStepValue(ProductDTO toEvaluateLocation, Map<Long, BigDecimal> allProductsInOrderWithQuantity) {
         int shelfValue = LetterToNumber.getNumberOfChar(toEvaluateLocation.getShelf().charAt(0));
         int positionValue = toEvaluateLocation.getPosition();
 
-        List<ProductDTO> relevantLocations = productLocationsOfOneProduct.stream()
-                .filter(productLocationOfOneProduct -> orderedProductsWithQuantity.containsKey((long) productLocationOfOneProduct.getProductId()) && !productLocationOfOneProduct.equals(toEvaluateLocation))
-                .toList();
+        List<ProductDTO> relevantLocations = new ArrayList<>();
+
+        for (Map.Entry<Long, BigDecimal> entry : allProductsInOrderWithQuantity.entrySet()) {
+            Long productId = entry.getKey();
+            if (productId != toEvaluateLocation.getProductId()) {
+                // Voeg locaties toe van andere producten in de bestelling
+                relevantLocations.addAll(productRepository.findByArtikelId(productId.intValue()));
+            }
+        }
 
         int totalDistance = relevantLocations.stream()
                 .mapToInt(p -> Math.abs(shelfValue - LetterToNumber.getNumberOfChar(p.getShelf().charAt(0)))
@@ -84,7 +88,7 @@ public class OrderService {
                 .sum();
 
         // Geef een hogere prioriteit aan locaties die dichter bij andere producten liggen
-        return totalDistance + positionValue;
+        return totalDistance;
     }
 }
 
