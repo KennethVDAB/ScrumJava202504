@@ -168,12 +168,9 @@ public class OrderService {
         // Retrieve the numeric value of the shelf letter using LetterToNumber.
         int shelfFactor = LetterToNumber.getNumberOfChar(location.getShelf().charAt(0));
 
-        // Calculate the shelf cost (each shelf level adds 10 steps).
-        int shelfCost = shelfFactor * 10;
-
         // Calculate the position cost (steps to and from the location).
         int positionCost = 2 * location.getPosition();
 
-        return shelfCost + positionCost;
+        return shelfFactor + positionCost;
     }
 }
