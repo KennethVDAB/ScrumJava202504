@@ -26,18 +26,4 @@ public class ProductRepository {
                 .query(ProductDTO.class)
                 .list();
     }
-
-    public List<ProductDTO> findByArtikelByIdAndQuantity(long artikelId, int quantityAsked) {
-        var sql = """
-                SELECT place.rij AS shelf, place.rek AS position, place.aantal AS quantity, artikel.naam AS name, artikel.artikelId AS productId
-                FROM MagazijnPlaatsen AS place
-                INNER JOIN Artikelen AS artikel ON place.artikelId = artikel.artikelId
-                WHERE place.artikelId = ? AND place.aantal >= ?
-                ORDER BY place.aantal DESC 
-                """;
-        return jdbcClient.sql(sql)
-                .params(artikelId, quantityAsked)
-                .query(ProductDTO.class)
-                .list();
-    }
 }
