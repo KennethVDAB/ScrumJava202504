@@ -150,7 +150,8 @@ public class OrderService {
 
         // Sorteer de uiteindelijke picking lijst op shelf en positie
         List<PickingItem> sortedProducts = result.stream()
-                .sorted(Comparator.comparingInt(p -> LetterToNumber.getNumberOfChar(p.getShelf().charAt(0)) + p.getPosition()))
+                .sorted(Comparator.comparing(PickingItem::getShelf)
+                        .thenComparingInt(PickingItem::getPosition))
                 .collect(Collectors.toList());
 
         return sortedProducts;
