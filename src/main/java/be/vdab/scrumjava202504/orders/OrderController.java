@@ -1,6 +1,7 @@
 package be.vdab.scrumjava202504.orders;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,10 +31,15 @@ public class OrderController {
         return orderService.getDisplayOrders();
     }
 
-    //TODO: REMOVE LATER
-    @GetMapping("/test")
-    public Object test() {
-        return orderService.getOrderDetailsByOrderId(1);
+    /**
+     * Retrieves an optimized picking route for the given order ID.
+     *
+     * @param id The unique identifier of the order for which the picking route is requested.
+     * @return A list of {@link PickingItem} objects representing the optimized picking sequence.
+     */
+    @GetMapping("/getOrderRoute/{id}")
+    public List<PickingItem> getOrderRoute(@PathVariable long id) {
+        return orderService.getOrderDetailsByOrderId(id);
     }
 }
 
