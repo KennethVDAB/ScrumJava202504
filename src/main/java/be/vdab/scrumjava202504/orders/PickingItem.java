@@ -5,10 +5,10 @@ public class PickingItem {
     private int position;
     private String name;
     private int quantityOrdered;
-    private int productId;
+    private long productId;
     private boolean picked = false;
 
-    public PickingItem(String shelf, int position, String name, int quantity, int productId) {
+    public PickingItem(String shelf, int position, String name, int quantity, long productId) {
         this.shelf = shelf;
         this.position = position;
         this.name = name;

@@ -54,4 +54,8 @@ public class ProductDTO {
         return productId;
     }
 
+    public String toString() {
+    	return "ProductDTO [shelf=" + shelf + ", position=" + position + ", name=" + name + ", quantity=" + quantity + ", productId=" + productId + "]";
+    }
+
 }
