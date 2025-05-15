@@ -9,12 +9,15 @@
 </head>
 <body>
   <header>
-    <img src="images/prularia-logo-wit.png" alt="Logo prularia">
+    <a href="index.html" class="no-underline">
+      <img src="images/prularia-logo-wit.png" alt="Logo prularia" class="logo">
+    </a>
+
     <h1>Bestelling details</h1>
   </header>
 
   <main>
-      <table>
+      <table id="tableOrders">
         <thead>
         <tr>
           <th>Rek</th>
@@ -26,28 +29,17 @@
         </thead>
 
         <tbody id="tableBody">
-        <tr>
-          <td>1</td>
-          <td>2</td>
-          <td><a>Stoel</a></td>
-          <td>25</td>
-          <td><input type="checkbox" ></td>
-        </tr>
-
-        <tr>
-          <td>1</td>
-          <td>15</td>
-          <td><a>Tafel</a></td>
-          <td>5</td>
-          <td><input type="checkbox"></td>
-        </tr>
         </tbody>
       </table>
 
-    <div class="button-container">
-      <button id="finishedBtn">Afgewerkt</button>
-      <button id="saveBackBtn">Opslaan en terug</button>
+    <div class="button-container" id="save-back-finished">
+      <button class="button" id="finishedBtn">Afgewerkt</button>
+      <button class="button" id="saveBackBtn">Opslaan en terug</button>
     </div>
+
+    <p id="noOrdersFound" hidden>Er zijn op dit moment geen bestellingen.</p>
+
+    <p id="error" hidden>Er is een probleem, gelieve contact op te nemen met ...</p>
   </main>
 </body>
 </html>
