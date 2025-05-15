@@ -41,9 +41,9 @@ public class OrderService {
 
         for (Map.Entry<Long, BigDecimal> entry : orderedProductsWithQuantity.entrySet()) {
             int productId = entry.getKey().intValue();
-            BigDecimal quantityAsked = entry.getValue();
+            int quantityAsked = entry.getValue().intValue();
 
-            List<ProductDTO> allPossibleProductLocations = productRepository.findByArtikelId(productId);
+            List<ProductDTO> allPossibleProductLocations = productRepository.findByArtikelByIdAndQuantity(productId, quantityAsked);
 
             ProductDTO bestLocation = allPossibleProductLocations.stream()
                     .min(Comparator.comparingInt(product -> calculateContextualStepValue(product, orderedProductsWithQuantity)))
@@ -54,7 +54,7 @@ public class OrderService {
                         bestLocation.getShelf(),
                         bestLocation.getPosition(),
                         bestLocation.getName(),
-                        quantityAsked.intValue(),
+                        quantityAsked,
                         productId
                 );
                 notOrderedPickingRoute.add(item);
@@ -77,7 +77,7 @@ public class OrderService {
         for (Map.Entry<Long, BigDecimal> entry : allProductsInOrderWithQuantity.entrySet()) {
             Long productId = entry.getKey();
             if (productId != toEvaluateLocation.getProductId()) {
-                relevantLocations.addAll(productRepository.findByArtikelId(productId.intValue()));
+                relevantLocations.addAll(productRepository.findByArtikelByIdAndQuantity(productId.intValue(), entry.getValue().intValue()));
             }
         }
 
