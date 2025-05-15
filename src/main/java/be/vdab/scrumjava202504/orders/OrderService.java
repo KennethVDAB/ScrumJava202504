@@ -20,7 +20,7 @@ public class OrderService {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
     }
-  
+
     public long getOrdersCount() {
         return orderRepository.getOrdersCount();
     }
@@ -30,152 +30,96 @@ public class OrderService {
     }
 
     public List<PickingItem> getOrderDetailsByOrderId(long orderId) {
-        // Haal de ordered producten en hun hoeveelheden op
+        // Haal per order de producten en hun hoeveelheid op
         Map<Long, BigDecimal> orderedProductsWithQuantity = orderRepository.getOrderDetailsByOrderId(orderId)
                 .stream()
                 .collect(Collectors.toMap(OrderDetails::getProductId, OrderDetails::getQuantityOrder));
 
         List<PickingItem> result = new ArrayList<>();
 
-        for (Map.Entry<Long, BigDecimal> orderedProductWithQuantity : orderedProductsWithQuantity.entrySet()) {
-            long productId = orderedProductWithQuantity.getKey();
-            int quantityAsked = orderedProductWithQuantity.getValue().intValue();
+        // Voor elk besteld product werken we de picking-instructies uit op basis van de meest efficiënte route.
+        orderedProductsWithQuantity.forEach((productId, quantityBigDecimal) -> {
+            int quantityAsked = quantityBigDecimal.intValue();
 
-            // Alle beschikbare locaties ophalen voor dit product
-            List<ProductDTO> allPossibleProductLocations = productRepository.findByArtikelId(productId);
+            // Haal alle mogelijke locaties voor dit product op
+            List<ProductDTO> candidateLocations = productRepository.findByArtikelId(productId);
 
-            // Eerst: Als een enkele locatie de volledige hoeveelheid kan leveren.
-            List<ProductDTO> sufficientLocations = allPossibleProductLocations.stream()
-                    .filter(location -> location.getQuantity() >= quantityAsked)
-                    .toList();
+            // Bereken de picking items voor dit product met de nieuwe route cost methode
+            List<PickingItem> pickingItems = getEfficientPickingItemsForProduct(productId, quantityAsked, candidateLocations);
 
-            if (!sufficientLocations.isEmpty()) {
-                // Kies de locatie met de beste (laagste) contextual step value
-                ProductDTO bestLocation = sufficientLocations.stream()
-                        .min(Comparator.comparingInt(product -> calculateContextualStepValue(product, orderedProductsWithQuantity)))
-                        .orElse(null);
+            result.addAll(pickingItems);
+        });
 
-                if (bestLocation != null) {
-                    result.add(new PickingItem(
-                            bestLocation.getShelf(),
-                            bestLocation.getPosition(),
-                            bestLocation.getName(),
-                            quantityAsked,
-                            productId
-                    ));
-                }
-            } else {
-                // Geen enkele locatie heeft op zich genoeg voorraad:
-                // Groepeer de beschikbare locaties per rek:
-                Map<String, List<ProductDTO>> locationsByShelf = allPossibleProductLocations.stream()
-                        .collect(Collectors.groupingBy(p -> p.getShelf()));
-
-                // Kies per rek de "beste" locatie (bijvoorbeeld de locatie met de laagste positie)
-                List<ProductDTO> candidates = locationsByShelf.entrySet().stream()
-                        .map(entry -> entry.getValue()
-                                .stream()
-                                .min(Comparator.comparingInt(ProductDTO::getPosition))
-                                .orElse(null))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-
-                // Sorteer de kandidaten op een logische routevolgorde.
-                // In dit voorbeeld sorteren we eerst op rek (alfabetisch) en dan op positie.
-                candidates.sort(Comparator.comparing(ProductDTO::getShelf)
-                        .thenComparingInt(ProductDTO::getPosition));
-
-                int remaining = quantityAsked;
-
-                // Eerst proberen we per rek maximaal één keer te picken (dus 1 per groep)
-                for (ProductDTO candidate : candidates) {
-                    if (remaining <= 0) {
-                        break;
-                    }
-
-                    int available = candidate.getQuantity();
-
-                    if (available > 0) {
-                        int qtyFromLocation = Math.min(available, 1);
-
-                        result.add(new PickingItem(
-                                candidate.getShelf(),
-                                candidate.getPosition(),
-                                candidate.getName(),
-                                qtyFromLocation,
-                                productId
-                        ));
-
-                        remaining -= qtyFromLocation;
-                    }
-                }
-
-                // Mocht de eerste ronde per groep niet voldoende zijn, dan herhaal je de procedure
-                // maar nu binnen elke groep waarbij algepickte kandidaten overgeslagen worden.
-                if (remaining > 0) {
-                    // Voor elke rek, bekijk of er meer locaties beschikbaar zijn (anders dan de reeds gekozen)
-                    for (Map.Entry<String, List<ProductDTO>> entry : locationsByShelf.entrySet()) {
-                        // Sorteer ook hier op positie
-                        List<ProductDTO> sortedLocations = entry.getValue().stream()
-                                .sorted(Comparator.comparingInt(ProductDTO::getPosition))
-                                .toList();
-
-                        // Kijk naar de overige, indien aanwezig
-                        if (sortedLocations.size() > 1 && remaining > 0) {
-                            // Kies de volgende in de volgorde (bijvoorbeeld de 2de locatie)
-                            ProductDTO candidate = sortedLocations.get(1);
-
-                            int available = candidate.getQuantity();
-
-                            if (available > 0) {
-
-                                int qty = Math.min(available, remaining);
-
-                                result.add(new PickingItem(
-                                        candidate.getShelf(),
-                                        candidate.getPosition(),
-                                        candidate.getName(),
-                                        qty,
-                                        productId
-                                ));
-
-                                remaining -= qty;
-                            }
-                        }
-
-                        if (remaining <= 0) break;
-                    }
-                }
-            }
-        }
-
-        // Sorteer de uiteindelijke picking lijst op shelf en positie
-        List<PickingItem> sortedProducts = result.stream()
+        // Sorteer de uiteindelijke picking lijst op rek en positie zodat de plukker een overzichtelijke volgorde krijgt.
+        return result.stream()
                 .sorted(Comparator.comparing(PickingItem::getShelf)
                         .thenComparingInt(PickingItem::getPosition))
                 .collect(Collectors.toList());
-
-        return sortedProducts;
     }
 
-    private int calculateContextualStepValue(ProductDTO toEvaluateLocation, Map<Long, BigDecimal> allProductsInOrderWithQuantity) {
-        int shelfValue = LetterToNumber.getNumberOfChar(toEvaluateLocation.getShelf().charAt(0));
-        int positionValue = toEvaluateLocation.getPosition();
+    /**
+     * Berekent voor een gegeven product de picking items op basis van de beschikbaarheid én
+     * de route kost (gebaseerd op het aantal stappen). Eerst worden alle locaties gesorteerd op
+     * de berekende round-trip kosten. Vervolgens wordt cumulatief gecheckt of de verzamelde hoeveelheid
+     * aan de optimale locaties het gewenste aantal bereikt.
+     *
+     * @param productId         Het product-ID.
+     * @param quantityAsked     De gevraagde hoeveelheid voor dit product.
+     * @param candidateLocations  De lijst met beschikbare locaties voor dit product.
+     * @return Een lijst met PickingItem-objecten voor de order.
+     */
+    private List<PickingItem> getEfficientPickingItemsForProduct(long productId, int quantityAsked, List<ProductDTO> candidateLocations) {
+        // Sorteer eerst op basis van de round-trip route cost.
+        List<ProductDTO> sortedLocations = candidateLocations.stream()
+                .sorted(Comparator.comparingInt(this::calculateRouteCost))
+                .collect(Collectors.toList());
 
-        List<ProductDTO> relevantLocations = new ArrayList<>();
+        int remaining = quantityAsked;
 
-        for (Map.Entry<Long, BigDecimal> entry : allProductsInOrderWithQuantity.entrySet()) {
-            Long productId = entry.getKey();
-            if (productId != toEvaluateLocation.getProductId()) {
-                relevantLocations.addAll(productRepository.findByArtikelId(productId));
+        List<PickingItem> pickedItems = new ArrayList<>();
+
+        // Ga de locaties af van de laagste naar de hoogste route kost totdat de gevraagde hoeveelheid is bereikt.
+        for (ProductDTO candidate : sortedLocations) {
+            if (remaining <= 0) {
+                break;
+            }
+
+            int available = candidate.getQuantity();
+
+            if (available > 0) {
+                int qtyToPick = Math.min(available, remaining);
+
+                pickedItems.add(new PickingItem(
+                        candidate.getShelf(),
+                        candidate.getPosition(),
+                        candidate.getName(),
+                        qtyToPick,
+                        productId
+                ));
+                remaining -= qtyToPick;
             }
         }
 
-        int totalDistance = relevantLocations.stream()
-                .mapToInt(p -> Math.abs(shelfValue - LetterToNumber.getNumberOfChar(p.getShelf().charAt(0)))
-                        + Math.abs(positionValue - p.getPosition()))
-                .sum();
+        // Eventueel kun je hier een controle toevoegen om te signaleren dat niet aan de gevraagde hoeveelheid is voldaan.
+        return pickedItems;
+    }
 
-        return totalDistance;
+    /**
+     * Bereken de round-trip route cost voor een locatie.
+     *
+     * @param location De ProductDTO-locatie.
+     * @return De berekende route cost (in stappen).
+     */
+    private int calculateRouteCost(ProductDTO location) {
+        // Haal de cijferwaarde op van de rek-letter via LetterToNumber
+        int shelfFactor = LetterToNumber.getNumberOfChar(location.getShelf().charAt(0));
+
+        // Bereken de rek-kost: stel dat elk rek-niveau 10 stappen extra vereist
+        int shelfCost = shelfFactor * 10;
+
+        // Bereken de positie-kost (heen en terug)
+        int positionCost = 2 * location.getPosition();
+
+        return shelfCost + positionCost;
     }
 }
-
