@@ -39,5 +39,4 @@ async function getOrdersAndShow() {
     }
 }
 
-// Execute the function immediately and repeat every 5 minutes (300000 ms)
 getOrdersAndShow();
