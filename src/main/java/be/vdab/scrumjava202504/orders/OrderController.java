@@ -1,5 +1,6 @@
 package be.vdab.scrumjava202504.orders;
 
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +39,7 @@ public class OrderController {
      * @return A list of {@link PickingItem} objects representing the optimized picking sequence.
      */
     @GetMapping("/getOrderRoute/{id}")
-    public List<PickingItem> getOrderRoute(@PathVariable long id) {
+    public List<PickingItem> getOrderRoute(@PathVariable @PositiveOrZero long id) {
         return orderService.getOrderDetailsByOrderId(id);
     }
 }
