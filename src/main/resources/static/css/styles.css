@@ -10,7 +10,6 @@
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #fff;
     font-weight: normal;
     font-size: 1rem;
 }
@@ -56,7 +55,7 @@ input[type="checkbox"] {
 }
 
 /* Button */
-button {
+.button {
     padding: 1%;
     border: 1px solid var(--primary-color);
     border-radius: var(--border-radius);
@@ -120,6 +119,10 @@ td {
         width: 30%;
         height: 50%;
         font-size: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
     }
 }
 
@@ -131,4 +134,8 @@ td {
     :last-child {
         margin-right: 2%;
     }
+}
+
+.no-underline {
+    text-decoration: none;
 }
