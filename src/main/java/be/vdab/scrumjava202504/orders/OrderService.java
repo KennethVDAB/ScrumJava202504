@@ -77,7 +77,6 @@ public class OrderService {
         for (Map.Entry<Long, BigDecimal> entry : allProductsInOrderWithQuantity.entrySet()) {
             Long productId = entry.getKey();
             if (productId != toEvaluateLocation.getProductId()) {
-                // Voeg locaties toe van andere producten in de bestelling
                 relevantLocations.addAll(productRepository.findByArtikelId(productId.intValue()));
             }
         }
@@ -87,7 +86,6 @@ public class OrderService {
                         + Math.abs(positionValue - p.getPosition()))
                 .sum();
 
-        // Geef een hogere prioriteit aan locaties die dichter bij andere producten liggen
         return totalDistance;
     }
 }
