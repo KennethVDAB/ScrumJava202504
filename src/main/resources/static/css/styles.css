@@ -4,6 +4,7 @@
     --black-color: #000;
     --border-radius: 5px;
     --secondary-color: #89c785;
+    --grey-color: #A8A8A8;
 }
 
 * {
@@ -52,6 +53,8 @@ a {
 input[type="checkbox"] {
     transform: scale(1.75);
     margin: 10px;
+    accent-color: var(--primary-color);
+    color: var(--white-color);
 }
 
 /* Button */
@@ -63,6 +66,13 @@ input[type="checkbox"] {
     color: var(--white-color);
     font-weight: bold;
     cursor: pointer;
+}
+
+button:disabled, a.disabled {
+    background-color: var(--grey-color); /* Grijze achtergrond */
+    border: 1px solid var(--grey-color); /* Donkerdere rand */
+    color: var(--white-color); /* Grijze tekst */
+    cursor: not-allowed; /* Geeft aan dat de knop niet interactief is */
 }
 
 /* Table */
@@ -105,8 +115,6 @@ td {
     }
 }
 
-/* TABLET */
-/* Index */
 .button-xl-container {
     display: flex;
     flex-direction: row;
@@ -126,7 +134,6 @@ td {
     }
 }
 
-/* Order picking */
 .button-container {
     display: flex;
     flex-direction: row-reverse;
