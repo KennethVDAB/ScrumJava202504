@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="nl-BE">
+<head>
+    <meta charset="UTF-8">
+    <title>Tv Scherm</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <script src="js/tvScreen.js" type="module"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header>
+    <a href="index.html" class="no-underline">
+        <img src="images/prularia-logo-wit.png" alt="Logo prularia" class="logo">
+    </a>
+</header>
+
+  <main>
+      <div id="amountOrders"><p></p></div>
+
+      <table id="tableOrders">
+          <thead>
+          <tr>
+              <th>Bestelnummer</th>
+              <th>Aantal producten</th>
+              <th>Gewicht</th>
+
+          </tr>
+          </thead>
+          <tbody id="tableBody">
+          </tbody>
+      </table>
+
+      <p id="noOrdersFound" hidden>Er zijn op dit moment geen bestellingen.</p>
+
+      <p id="error" hidden>Er is een probleem, gelieve contact op te nemen met ...</p>
+  </main>
+</body>
+</html>

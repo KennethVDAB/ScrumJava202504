@@ -1,0 +1,148 @@
+:root {
+    --primary-color: #ABD7A8;
+    --white-color: #fff;
+    --black-color: #000;
+    --border-radius: 5px;
+    --secondary-color: #89c785;
+    --grey-color: #A8A8A8;
+}
+
+* {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    font-size: 1rem;
+}
+
+body {
+    height: 100vh;
+
+    header {
+        background-color: var(--primary-color);
+        padding: 1%;
+        margin-bottom: 2%;
+
+        img {
+            width: 20%;
+            background-color: var(--primary-color);
+        }
+
+        h1 {
+            font-weight: normal;
+            color: var(--white-color);
+            margin-top: 2%;
+            margin-left: 7%;
+            font-size: 1.75rem;
+            background-color: var(--primary-color);
+        }
+    }
+}
+
+main {
+    padding: 2%;
+}
+
+/* a-tag */
+a {
+    text-decoration: underline;
+    color: var(--secondary-color);
+}
+
+/* Input-types */
+input[type="checkbox"] {
+    transform: scale(1.75);
+    margin: 10px;
+    accent-color: var(--primary-color);
+    color: var(--white-color);
+}
+
+/* Button */
+.button {
+    padding: 1%;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:disabled, a.disabled {
+    background-color: var(--grey-color); /* Grijze achtergrond */
+    border: 1px solid var(--grey-color); /* Donkerdere rand */
+    color: var(--white-color); /* Grijze tekst */
+    cursor: not-allowed; /* Geeft aan dat de knop niet interactief is */
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th, td {
+    border: 1px solid var(--primary-color);
+    padding: 1%;
+}
+
+th {
+    text-align: center;
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    font-weight: bold;
+}
+
+td {
+    text-align: right;
+    padding-right: 2%;
+}
+
+/* TV Screen */
+#amountOrders {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-bottom: 2%;
+
+    p {
+        background-color: var(--primary-color);
+        border: 1px solid var(--white-color);
+        color: var(--white-color);
+        padding: 1% 2%;
+        border-radius: var(--border-radius);
+        font-weight: bold;
+    }
+}
+
+.button-xl-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 100vh;
+    padding: 0;
+
+    .button-xl {
+        width: 30%;
+        height: 50%;
+        font-size: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 2%;
+    :last-child {
+        margin-right: 2%;
+    }
+}
+
+.no-underline {
+    text-decoration: none;
+}

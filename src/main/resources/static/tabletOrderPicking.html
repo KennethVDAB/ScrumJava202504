@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="nl-BE">
+<head>
+    <meta charset="UTF-8">
+    <title>Bestellingen</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <script src="js/orderPicking.js" type="module"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <a href="index.html" class="no-underline">
+      <img src="images/prularia-logo-wit.png" alt="Logo prularia" class="logo">
+    </a>
+
+    <h1>Bestelling details</h1>
+  </header>
+
+  <main>
+      <table id="tableOrders">
+        <thead>
+        <tr>
+          <th>Rek</th>
+          <th>Plaats</th>
+          <th>Naam</th>
+          <th>Aantal</th>
+          <th>In orde?</th>
+        </tr>
+        </thead>
+
+        <tbody id="tableBody">
+        </tbody>
+      </table>
+
+    <div class="button-container" id="save-back-finished">
+      <button class="button" id="finishedBtn" disabled>Afgewerkt</button>
+      <button class="button" id="saveBackBtn">Opslaan en terug</button>
+    </div>
+
+    <p id="noOrdersFound" hidden>Er zijn op dit moment geen bestellingen.</p>
+
+    <p id="error" hidden>Er is een probleem, gelieve contact op te nemen met ...</p>
+  </main>
+</body>
+</html>
