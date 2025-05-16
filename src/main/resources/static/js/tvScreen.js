@@ -2,37 +2,53 @@
 
 import {byId, hideElementsById, showElementById} from "./util.js";
 
-async function getOrdersAndShow() {
-    const response = await fetch("api/order/display");
+async function getOrdersAndCountAndShow() {
+    byId("amountOrders").hidden = true;
 
-    hideElementsById("noOrdersFound");
-    hideElementsById("error");
-    showElementById("tableOrders");
+    try {
+        const [ordersResponse, countResponse] = await Promise.all([
+            fetch("api/order/display"),
+            fetch("api/order/count")
+        ]);
 
-    if (response.ok) {
-        const orders = await response.json();
+        hideElementsById("noOrdersFound");
+        hideElementsById("error");
+        showElementById("tableOrders");
 
-        const tableBody = byId("tableBody");
+        if (ordersResponse.ok && countResponse.ok) {
+            byId("amountOrders").hidden = false;
 
-        orders.forEach(order => {
-            const tr = tableBody.insertRow();
-            tr.insertCell().innerText = order.id;
-            tr.insertCell().innerText = order.products;
-            tr.insertCell().innerText = order.weight + " kg";
-        });
+            const orders = await ordersResponse.json();
+            const count = await countResponse.json();
 
-        byId("amountOrders").firstElementChild.innerText = orders.length + "/5 Bestellingen";
+            const tableBody = byId("tableBody");
+            tableBody.innerHTML = ""; // Verwijder bestaande rijen
 
-        if (orders.length === 0) {
-            showElementById("noOrdersFound");
+            orders.forEach(order => {
+                const tr = tableBody.insertRow();
+                tr.insertCell().innerText = order.id;
+                tr.insertCell().innerText = order.products;
+                tr.insertCell().innerText = order.weight + " kg";
+            });
+
+            byId("amountOrders").firstElementChild.innerText = `${orders.length}/${count} Bestellingen`;
+
+            if (orders.length === 0) {
+                showElementById("noOrdersFound");
+                hideElementsById("tableOrders");
+            }
+        } else {
+            byId("amountOrders").hidden = true;
+            showElementById("error");
             hideElementsById("tableOrders");
         }
-    } else {
+    } catch (error) {
+        console.error("Fout bij ophalen van orders en count:", error);
         showElementById("error");
         hideElementsById("tableOrders");
     }
 }
 
 // Execute the function immediately and repeat every 5 minutes (300000 ms)
-getOrdersAndShow();
-setInterval(getOrdersAndShow, 300000);
+getOrdersAndCountAndShow();
+setInterval(getOrdersAndCountAndShow, 300000);
