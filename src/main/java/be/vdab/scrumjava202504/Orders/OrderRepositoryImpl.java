@@ -17,7 +17,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         String sql = """
                 SELECT COUNT(*)
                 FROM Bestellingen
-                WHERE betaald = 1
+                WHERE betaald IS TRUE
                 """;
 
         return jdbcClient.sql(sql)
@@ -37,7 +37,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                     artikelen p ON od.artikelId = p.artikelId
                 JOIN
                 	bestellingen b on b.bestelId = od.bestelId
-                WHERE b.betaald = 1
+                WHERE b.betaald IS TRUE
                 GROUP BY
                     od.bestelId
                 ORDER BY
