@@ -20,7 +20,14 @@ async function getOrdersAndShow(idOrder) {
             const tr = tableBody.insertRow();
             tr.insertCell().innerText = order.shelf;
             tr.insertCell().innerText = order.position;
-            tr.insertCell().innerText = order.name;
+
+            const nameCell = tr.insertCell();
+            const link = document.createElement("a");
+            link.href = "productDetails.html";
+            link.classList.add("no-underline");
+            link.innerText = order.name;
+            nameCell.appendChild(link);
+
             tr.insertCell().innerText = order.quantityOrdered;
 
 
