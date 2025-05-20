@@ -4,6 +4,8 @@ import be.vdab.scrumjava202504.exception.OrderNotFoundException;
 import be.vdab.scrumjava202504.products.ProductDTO;
 import be.vdab.scrumjava202504.products.ProductRepository;
 import be.vdab.scrumjava202504.util.LetterToNumber;
+import be.vdab.scrumjava202504.warehouseLocations.LocationNotFoundException;
+import be.vdab.scrumjava202504.warehouseLocations.WarehouseLocationRepository;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import java.util.stream.Collectors;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final WarehouseLocationRepository warehouseLocationRepository;
 
     /**
      * Constructs a new {@code OrderService} with the specified order and product repositories.
@@ -41,9 +44,10 @@ public class OrderService {
      * @param orderRepository   the repository used to retrieve order details
      * @param productRepository the repository used to retrieve product details and locations
      */
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, WarehouseLocationRepository warehouseLocationRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.warehouseLocationRepository = warehouseLocationRepository;
     }
 
     /**
@@ -179,12 +183,45 @@ public class OrderService {
         return shelfFactor + positionCost;
     }
 
-    /*
-    *
-    * */
+    /**
+     * Completes an order by updating stock levels and changing the order status.
+     *
+     * <p>
+     * This method retrieves an order by its ID, locks it, and processes the associated items.
+     * For each item:
+     * <ul>
+     *   <li>The ordered quantity is deducted from the product's stock.</li>
+     *   <li>The warehouse inventory levels are updated accordingly.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * If the order is not found, an {@link OrderNotFoundException} is thrown.
+     * If the warehouse location is not found, a {@link LocationNotFoundException} is thrown.
+     * </p>
+     *
+     * @param orderId The unique ID of the order.
+     * @throws OrderNotFoundException If the order is not found.
+     * @throws LocationNotFoundException If the warehouse location is not found.
+     */
     @Transactional(readOnly = false)
-    public void finishOrder(@PositiveOrZero long id) {
-        this.orderRepository.findAndLockById(id);
-        this.orderRepository.updateOrderStatus(id, 5);
+    public void finishOrder(@PositiveOrZero long orderId) {
+        this.orderRepository.findAndLockById(orderId).ifPresentOrElse(order -> {
+
+            this.getOrderDetailsByOrderId(orderId).forEach(pickingItem -> {
+                BigDecimal quantityOrdered = BigDecimal.valueOf(pickingItem.getQuantityOrdered());
+
+                this.productRepository.updateStock(pickingItem.getProductId(), quantityOrdered);
+
+                this.warehouseLocationRepository.findBySelfAndPositionAndLockById(pickingItem.getShelf(), pickingItem.getPosition())
+                        .ifPresentOrElse(warehouseLocation -> {
+                            BigDecimal newAmount = warehouseLocation.getAmount().subtract(quantityOrdered);
+                            this.warehouseLocationRepository.updateAmount(pickingItem.getShelf(), pickingItem.getPosition(), newAmount);
+                        }, () -> { throw new LocationNotFoundException(pickingItem.getShelf(), pickingItem.getPosition()); });
+            });
+
+            this.orderRepository.updateOrderStatus(orderId, 5);
+
+        }, () -> { throw new OrderNotFoundException(orderId); });
     }
 }

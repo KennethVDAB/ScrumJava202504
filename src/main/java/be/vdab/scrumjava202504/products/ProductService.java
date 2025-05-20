@@ -18,6 +18,4 @@ public class ProductService {
     public List<ProductDTO> getPlaceForArtikel (long artikelId) {
         return productRepository.findByArtikelId(artikelId);
     }
-
-    //TODO: connect all the updates together
 }
