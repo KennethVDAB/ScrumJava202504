@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="nl-BE">
+<head>
+    <meta charset="UTF-8">
+    <title>Levering</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/levering.js" type="module"></script>
+</head>
+<body>
+<header>
+    <a href="introScreen.html" class="no-underline">
+        <img src="images/prularia-logo-wit.png" alt="Logo prularia" class="logo">
+    </a>
+
+    <h1>Levering verwerken</h1>
+</header>
+
+<main>
+    <form id="inkomendeLeveringForm">
+
+        <h2>Leveringsgegevens</h2>
+        <fieldset>
+            <label for="leverancier">Leverancier:</label>
+            <select id="leverancier" name="leverancier" required>
+                <option value="">-- Selecteer een leverancier --</option>
+            </select>
+            <br><br>
+
+            <label for="leveringsbonnummer">Leveringsbonnummer:</label>
+            <input type="text" id="leveringsbonnummer" name="leveringsbonnummer" required>
+            <br><br>
+
+            <label for="leveringsbondatum">Datum leveringsbon:</label>
+            <input type="date" id="leveringsbondatum" name="leveringsbondatum" required>
+            <br><br>
+
+            <label for="leverdatum">Leverdatum:</label>
+            <input type="date" id="leverdatum" name="leverdatum" required>
+        </fieldset>
+
+        <br>
+
+        <h2>Geleverde Artikelen</h2>
+        <fieldset>
+            <table>
+                <thead>
+                <tr>
+                    <th>EAN</th>
+                    <th>Aantal</th>
+                </tr>
+                </thead>
+                <tbody id="artikellijst">
+                <tr>
+                    <td>
+                        <label for="eanSuggesties" hidden>Suggesties voor EAN-code</label>
+                        <input type="text"
+                               class="ean-input"
+                               name="ean"
+                               list="eanSuggesties"
+                               placeholder="Voer EAN-code in"
+                               autocomplete="off"
+                               required>
+                        <datalist id="eanSuggesties">
+
+                        </datalist>
+                    </td>
+                    <td>
+                        <label for="aantal" hidden>Aantal geleverd</label>
+                        <input type="number"
+                               id="aantal"
+                               class="aantal-input"
+                               name="aantal"
+                               min="1"
+                               placeholder="Aantal"
+                               required>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="button-container">
+                <button type="button" class="button" id="artikelToevoegenKnop">Artikel toevoegen</button>
+            </div>
+        </fieldset>
+
+        <div class="button-container">
+            <button type="submit" class="button">Levering opslaan</button>
+        </div>
+
+        <p id="error" hidden>Er is een probleem, probeer het later opnieuw!</p>
+    </form>
+</main>
+</body>
+</html>
