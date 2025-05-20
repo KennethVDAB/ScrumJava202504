@@ -1,11 +1,13 @@
-package be.vdab.scrumjava202504.Orders;
+package be.vdab.scrumjava202504.orders;
 
+import be.vdab.scrumjava202504.Orders.OrderRepositoryImpl;
+import be.vdab.scrumjava202504.Orders.DisplayOrder;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
@@ -15,36 +17,53 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @Import(OrderRepositoryImpl.class)
-@Sql("/orders.sql") // This file sets up test data
+@Sql("/orders.sql")
 class OrderRepositoryImplTest {
 
     @Autowired
-    private OrderRepositoryImpl repository;
+    private OrderRepositoryImpl orderRepositoryImpl;
+
     @Autowired
     private JdbcClient jdbcClient;
 
-    private static final String ORDERS_TABLE = "bestellingen";
-
     @Test
-    void getOrdersCountReturnsCorrectNumberOfPaidOrders() {
-        var expectedCount = JdbcTestUtils.countRowsInTableWhere(jdbcClient, ORDERS_TABLE, "betaald IS TRUE");
-        assertThat(repository.getOrdersCount()).isEqualTo(expectedCount);
+    void getOrdersCountReturnsNumberOfPaidOrders() {
+        var expected = jdbcClient.sql("SELECT COUNT(*) FROM bestellingen WHERE betaald = TRUE")
+                .query(Long.class).single();
+        assertThat(orderRepositoryImpl.getOrdersCount()).isEqualTo(expected);
     }
 
     @Test
-    void getDisplayOrdersReturnsAtMostFiveOrders() {
-        var orders = repository.getDisplayOrders();
-        assertThat(orders.size()).isLessThanOrEqualTo(5);
+    void getDisplayOrdersReturnsAtMostFiveResults() {
+        var displayOrders = orderRepositoryImpl.getDisplayOrders();
+        assertThat(displayOrders).hasSizeLessThanOrEqualTo(5);
     }
 
     @Test
-    void getDisplayOrdersReturnsOrdersWithValidFields() {
-        var orders = repository.getDisplayOrders();
-        if (!orders.isEmpty()) {
-            var order = orders.get(0);
-            assertThat(order.getId()).isPositive();
-            assertThat(order.getProducts()).isPositive();
-            assertThat(order.getWeight()).isInstanceOf(BigDecimal.class);
-        }
+    void getDisplayOrdersDoesNotIncludeUnpaidOrders() {
+        var displayOrders = orderRepositoryImpl.getDisplayOrders();
+        var unpaidOrderId = 102L;
+        assertThat(displayOrders)
+                .extracting(DisplayOrder::getId)
+                .doesNotContain(unpaidOrderId);
+    }
+
+    @Test
+    void getDisplayOrdersIsSortedByOrderDate() {
+        var displayOrders = orderRepositoryImpl.getDisplayOrders();
+        assertThat(displayOrders)
+                .extracting(DisplayOrder::getId)
+                .containsExactly(100L, 101L, 103L, 104L, 105L);
+    }
+
+    @Test
+    void getDisplayOrdersCalculatesTotalWeightCorrectly() {
+        var displayOrders = orderRepositoryImpl.getDisplayOrders();
+        var weight = displayOrders.stream()
+                .filter(order -> order.getId() == 100L)
+                .map(DisplayOrder::getWeight)
+                .findFirst()
+                .orElseThrow();
+        assertThat(weight).isEqualByComparingTo(new BigDecimal("2"));
     }
 }
