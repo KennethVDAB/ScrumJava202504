@@ -1,13 +1,18 @@
 package be.vdab.scrumjava202504.orders;
 
+import be.vdab.scrumjava202504.exception.OrderNotFoundException;
 import be.vdab.scrumjava202504.products.ProductDTO;
 import be.vdab.scrumjava202504.products.ProductRepository;
 import be.vdab.scrumjava202504.util.LetterToNumber;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -172,5 +177,14 @@ public class OrderService {
         int positionCost = 2 * location.getPosition();
 
         return shelfFactor + positionCost;
+    }
+
+    /*
+    *
+    * */
+    @Transactional(readOnly = false)
+    public void finishOrder(@PositiveOrZero long id) {
+        this.orderRepository.findAndLockById(id);
+        this.orderRepository.updateOrderStatus(id, 5);
     }
 }
