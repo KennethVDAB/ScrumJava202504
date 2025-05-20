@@ -21,22 +21,27 @@
 
         <h2>Leveringsgegevens</h2>
         <fieldset>
-            <label for="leverancier">Leverancier:</label>
-            <select id="leverancier" name="leverancier" required>
-                <option value="">-- Selecteer een leverancier --</option>
-            </select>
-            <br><br>
+            <div>
+                <label for="leverancier">Leverancier:</label>
+                <select id="leverancier" name="leverancier" required>
+                    <option value="">-- Selecteer een leverancier --</option>
+                </select>
+            </div>
 
-            <label for="leveringsbonnummer">Leveringsbonnummer:</label>
-            <input type="text" id="leveringsbonnummer" name="leveringsbonnummer" required>
-            <br><br>
+            <div>
+                <label for="leveringsbonnummer">Leveringsbonnummer:</label>
+                <input type="text" id="leveringsbonnummer" name="leveringsbonnummer" autocomplete="off" required>
+            </div>
 
-            <label for="leveringsbondatum">Datum leveringsbon:</label>
-            <input type="date" id="leveringsbondatum" name="leveringsbondatum" required>
-            <br><br>
+            <div>
+                <label for="leveringsbondatum">Datum leveringsbon:</label>
+                <input type="date" id="leveringsbondatum" name="leveringsbondatum" required>
+            </div>
 
-            <label for="leverdatum">Leverdatum:</label>
-            <input type="date" id="leverdatum" name="leverdatum" required>
+            <div>
+                <label for="leverdatum">Leverdatum:</label>
+                <input type="date" id="leverdatum" name="leverdatum" required>
+            </div>
         </fieldset>
 
         <br>
@@ -53,11 +58,12 @@
                 <tbody id="artikellijst">
                 <tr>
                     <td>
-                        <label for="eanSuggesties" hidden>Suggesties voor EAN-code</label>
+                        <label for="ean1" hidden>EAN-code</label>
                         <input type="text"
-                               class="ean-input"
+                               id="ean1"
                                name="ean"
                                list="eanSuggesties"
+                               class="ean-input"
                                placeholder="Voer EAN-code in"
                                autocomplete="off"
                                required>
@@ -66,16 +72,17 @@
                         </datalist>
                     </td>
                     <td>
-                        <label for="aantal" hidden>Aantal geleverd</label>
+                        <label for="aantal1" hidden>Aantal geleverd</label>
                         <input type="number"
-                               id="aantal"
-                               class="aantal-input"
+                               id="aantal1"
                                name="aantal"
+                               class="aantal-input"
                                min="1"
                                placeholder="Aantal"
                                required>
                     </td>
                 </tr>
+
                 </tbody>
             </table>
 
