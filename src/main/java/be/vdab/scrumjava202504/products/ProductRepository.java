@@ -43,7 +43,7 @@ public class ProductRepository {
                 INNER JOIN leveranciers AS supplier ON supplier.leveranciersId = artikelen.leveranciersId
                 WHERE artikelen.artikelId = ?
                   AND place.rij = ?
-                  AND place.rek = ? 
+                  AND place.rek = ?
                 """;
 
         return jdbcClient.sql(sql)

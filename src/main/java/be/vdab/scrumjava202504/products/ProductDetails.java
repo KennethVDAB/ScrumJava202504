@@ -48,7 +48,8 @@ public class ProductDetails {
     }
 
     public String getProductName() {
-        return productName;}
+        return productName;
+    }
 
     public String getSupplier() {
         return supplier;
