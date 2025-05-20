@@ -17,17 +17,17 @@
 </header>
 
 <main>
-    <section id="artikelContainer">
+    <section>
         <h2 id="name">Name</h2>
         <dl>
             <dt>EAN:</dt>
             <dd id="ean"></dd>
-            <dt>Plaats:</dt>
-            <dd id="place"></dd>
-            <dt>Rek:</dt>
-            <dd id="rack"></dd>
+            <dt>Rek - Plaats</dt>
+            <dd><span id="rack"></span> - <span id="place"></span></dd>
             <dt>Aantal om te picken:</dt>
             <dd id="number-to-pick"></dd>
+            <dt>Prijs:</dt>
+            <dd id="price"></dd>
             <dt>Voorraad:</dt>
             <dd id="stock-available"></dd>
             <dt>Leverancier:</dt>
@@ -37,7 +37,7 @@
         </dl>
     </section>
 
-    <button class="button" id="saveBackBtn">Terug</button>
+    <a class="button no-underline" href="tabletOrderPicking.html">Terug</a>
 
     <p id="no-product-found" hidden>Er zijn geen details van dit artikel.</p>
 
