@@ -9,6 +9,7 @@ public class Order {
     private final boolean paid;
     private final String paymentCode;
     private final long paymentId;
+    private long orderStatusId;
     private final boolean dealCodeUsed;
     private final String companyName;
     private final String BTWNumber;
@@ -17,12 +18,13 @@ public class Order {
     private final long paymentAddressId;
     private final long shippingAddressId;
 
-    public Order(LocalDateTime orderDate, long customerId, boolean paid, String paymentCode, long paymentId, boolean dealCodeUsed, String companyName, String BTWNumber, String firstName, String lastName, long paymentAddressId, long shippingAddressId, long id) {
+    public Order(LocalDateTime orderDate, long customerId, boolean paid, String paymentCode, long paymentId, long orderStatusId, boolean dealCodeUsed, String companyName, String BTWNumber, String firstName, String lastName, long paymentAddressId, long shippingAddressId, long id) {
         this.orderDate = orderDate;
         this.customerId = customerId;
         this.paid = paid;
         this.paymentCode = paymentCode;
         this.paymentId = paymentId;
+        this.orderStatusId = orderStatusId;
         this.dealCodeUsed = dealCodeUsed;
         this.companyName = companyName;
         this.BTWNumber = BTWNumber;
@@ -83,5 +85,13 @@ public class Order {
 
     public long getShippingAddressId() {
         return shippingAddressId;
+    }
+
+    public long getOrderStatusId() {
+        return orderStatusId;
+    }
+
+    public void setOrderStatusId(long orderStatusId) {
+        this.orderStatusId = orderStatusId;
     }
 }
