@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="nl-BE">
+<head>
+    <meta charset="UTF-8">
+    <title>Artikel Details</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <script src="" type="module"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header>
+    <a href="index.html" class="no-underline">
+        <img src="images/prularia-logo-wit.png" alt="Logo prularia" class="logo">
+    </a>
+
+    <h1>Artikel details</h1>
+</header>
+
+<main>
+    <section id="artikelContainer">
+        <h2 id="name">Name</h2>
+        <dl>
+            <dt>EAN:</dt>
+            <dd id="ean"></dd>
+            <dt>Plaats:</dt>
+            <dd id="place"></dd>
+            <dt>Rek:</dt>
+            <dd id="rack"></dd>
+            <dt>Aantal om te picken:</dt>
+            <dd id="number-to-pick"></dd>
+            <dt>Voorraad:</dt>
+            <dd id="stock-available"></dd>
+            <dt>Leverancier:</dt>
+            <dd id="supplier"></dd>
+            <dt>Gewicht:</dt>
+            <dd id="weight"></dd>
+        </dl>
+    </section>
+
+    <button class="button" id="saveBackBtn">Terug</button>
+
+    <p id="no-product-found" hidden>Er zijn geen details van dit artikel.</p>
+
+    <p id="error" hidden>Er is een probleem, gelieve contact op te nemen met ...</p>
+</main>
+</body>
+</html>
