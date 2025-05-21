@@ -191,11 +191,3 @@ form {
         border: 1px solid var(--grey-color);
         padding: 0.5rem;
     }
-
-#artikellijst input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.5rem;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--grey-color);
-}
