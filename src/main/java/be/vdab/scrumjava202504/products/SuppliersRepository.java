@@ -13,12 +13,12 @@ public class SuppliersRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    List<String> fetchAllSupplierNames() {
+    List<SupplierDTO> fetchAllSupplierNames() {
         var sql = """
-                SELECT naam
+                SELECT leveranciers.leveranciersId as id, leveranciers.naam as name
                 FROM leveranciers""";
         return jdbcClient.sql(sql)
-                .query(String.class)
+                .query(SupplierDTO.class)
                 .list();
     }
 }
