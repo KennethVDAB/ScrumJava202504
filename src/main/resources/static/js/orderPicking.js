@@ -1,7 +1,7 @@
 "use strict";
 
 import {byId, hideElementsById, showElementById} from "./util.js";
-const finishedBtn = document.getElementById("finishedBtn");
+const finishedBtn = byId("finishedBtn");
 
 async function getOrdersAndShow(idOrder) {
     const response = await fetch("api/order/getOrderRoute/" + idOrder);
@@ -95,14 +95,16 @@ finishedBtn.addEventListener("click", async () => {
 
 async function finishOrder(orderId) {
     try {
-        const response = await fetch("api/order/finishOrder/" + orderId);
+        const response = await fetch("api/order/finishOrder/" + orderId, {
+            method: "POST"
+        });
         return response.ok;
-    } catch (e) {
+    } catch (error) {
         return false;
     }
 }
 
-document.getElementById("saveBackBtn").addEventListener("click", () => {
+byId("saveBackBtn").addEventListener("click", () => {
     window.location.href = "introScreen.html";
 });
 
