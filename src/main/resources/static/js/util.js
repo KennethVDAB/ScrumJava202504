@@ -19,3 +19,11 @@ export function hideElementsById(...ids) {
 export function isNullOrUndefined(value) {
     return value === null || value === undefined;
 }
+
+export function capitalizeFirstWord(string) {
+    let words = string.split(" ");
+    if (words.length > 0) {
+        words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1).toLowerCase();
+    }
+    return words.join(" ");
+}
