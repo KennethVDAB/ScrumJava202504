@@ -8,39 +8,52 @@
     <script src="js/levering.js" type="module"></script>
 </head>
 <body>
+
+<!-- Header with logo and page title -->
 <header>
     <a href="introScreen.html" class="no-underline">
         <img src="images/prularia-logo-wit.png" alt="Logo prularia" class="logo">
     </a>
-
     <h1>Levering verwerken</h1>
 </header>
 
 <main>
+    <!-- Main delivery form -->
     <form id="inkomendeLeveringForm">
 
+        <!-- Section: Delivery Information -->
         <h2>Leveringsgegevens</h2>
         <fieldset>
-            <label for="leverancier">Leverancier:</label>
-            <select id="leverancier" name="leverancier" required>
-                <option value="">-- Selecteer een leverancier --</option>
-            </select>
-            <br><br>
+            <!-- Supplier dropdown selection -->
+            <div>
+                <label for="leverancier">Leverancier:</label>
+                <select id="leverancier" name="leverancier" required>
+                    <option value="">-- Selecteer een leverancier --</option>
+                </select>
+            </div>
 
-            <label for="leveringsbonnummer">Leveringsbonnummer:</label>
-            <input type="text" id="leveringsbonnummer" name="leveringsbonnummer" required>
-            <br><br>
+            <!-- Delivery note number -->
+            <div>
+                <label for="leveringsbonnummer">Leveringsbonnummer:</label>
+                <input type="text" id="leveringsbonnummer" name="leveringsbonnummer" autocomplete="off" required>
+            </div>
 
-            <label for="leveringsbondatum">Datum leveringsbon:</label>
-            <input type="date" id="leveringsbondatum" name="leveringsbondatum" required>
-            <br><br>
+            <!-- Delivery note date -->
+            <div>
+                <label for="leveringsbondatum">Datum leveringsbon:</label>
+                <input type="date" id="leveringsbondatum" name="leveringsbondatum" required>
+            </div>
 
-            <label for="leverdatum">Leverdatum:</label>
-            <input type="date" id="leverdatum" name="leverdatum" required>
+            <!-- Actual delivery date -->
+            <div>
+                <label for="leverdatum">Leverdatum:</label>
+                <input type="date" id="leverdatum" name="leverdatum" required>
+            </div>
         </fieldset>
 
         <br>
 
+        <!-- Section: Delivered Articles -->
         <h2>Geleverde Artikelen</h2>
         <fieldset>
             <table>
@@ -51,26 +64,30 @@
                 </tr>
                 </thead>
                 <tbody id="artikellijst">
+                <!-- First input row for delivered item -->
                 <tr>
                     <td>
-                        <label for="eanSuggesties" hidden>Suggesties voor EAN-code</label>
+                        <!-- EAN input field with datalist for suggestions -->
+                        <label for="eanInput-1" hidden>EAN-code</label>
                         <input type="text"
-                               class="ean-input"
+                               id="eanInput-1"
                                name="ean"
                                list="eanSuggesties"
+                               class="ean-input"
                                placeholder="Voer EAN-code in"
                                autocomplete="off"
                                required>
                         <datalist id="eanSuggesties">
-
+                            <!-- Autocomplete options will be populated via JavaScript -->
                         </datalist>
                     </td>
                     <td>
-                        <label for="aantal" hidden>Aantal geleverd</label>
+                        <!-- Quantity input for delivered amount -->
+                        <label for="aantalInput-1" hidden>Aantal geleverd</label>
                         <input type="number"
-                               id="aantal"
-                               class="aantal-input"
+                               id="aantalInput-1"
                                name="aantal"
+                               class="aantal-input"
                                min="1"
                                placeholder="Aantal"
                                required>
@@ -79,17 +96,21 @@
                 </tbody>
             </table>
 
+            <!-- Button to dynamically add more article rows -->
             <div class="button-container">
                 <button type="button" class="button" id="artikelToevoegenKnop">Artikel toevoegen</button>
             </div>
         </fieldset>
 
+        <!-- Submit button for finalizing the delivery -->
         <div class="button-container">
             <button type="submit" class="button">Levering opslaan</button>
         </div>
 
+        <!-- Error message display -->
         <p id="error" hidden>Er is een probleem, probeer het later opnieuw!</p>
     </form>
 </main>
+
 </body>
 </html>

@@ -14,29 +14,29 @@ public class WarehouseLocationRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    Optional<WarehouseLocation> findAndLockById(int id) {
+    public Optional<WarehouseLocation> findBySelfAndPositionAndLockById(String shelf, int position) {
         String sql = """
                 SELECT magazijnPlaatsId as id, artikelId as productId, rij as shelf, rek as position, aantal as amount
                 FROM magazijnplaatsen
-                WHERE magazijnPlaatsId = ?
+                WHERE rij = ? AND rek = ?
                 FOR UPDATE
                 """;
 
         return jdbcClient.sql(sql)
-                .param(id)
+                .params(shelf, position)
                 .query(WarehouseLocation.class)
                 .optional();
     }
 
-    void updateAmount(int id, BigDecimal amount) {
+    public void updateAmount(String shelf, int position, BigDecimal amount) {
         String sql = """
                 UPDATE magazijnplaatsen
                 SET aantal = ?
-                WHERE magazijnPlaatsId = ?
+                WHERE rij = ? AND rek = ?
                 """;
 
         jdbcClient.sql(sql)
-                .params(amount, id)
+                .params(amount, shelf, position)
                 .update();
     }
 }
