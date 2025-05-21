@@ -3,7 +3,10 @@ package be.vdab.scrumjava202504.products;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public class ProductRepository {
 
@@ -50,5 +53,29 @@ public class ProductRepository {
                 .params(artikelId, shelf, position)
                 .query(ProductDetails.class)
                 .list();
+    }
+
+    public void updateStock(long productId, BigDecimal inStock) {
+        var sql = """
+                UPDATE Artikelen
+                SET voorraad = ?
+                WHERE artikelId = ?
+                """;
+        jdbcClient.sql(sql)
+                .params(inStock, productId)
+                .update();
+    }
+
+    public Optional<Product> findAndLockByArtikelId(long artikelId) {
+        var sql = """
+                SELECT artikelId as productId, ean, naam as name, omschrijving as description, prijs as price, gewichtInGram as weightInGram, voorraad as inStock, minVoorraad as minStock, maxVoorraad as maxStpcl, levertijd as deliveryTime, besteldBijLeverancier as orderedAtSupplier, maxInStockPlaats as maxInStockPlace, leverancierId as supplierId
+                FROM Artikelen
+                WHERE artikelId = ?
+                FOR UPDATE
+                """;
+        return jdbcClient.sql(sql)
+                .param(artikelId)
+                .query(Product.class)
+                .optional();
     }
 }
