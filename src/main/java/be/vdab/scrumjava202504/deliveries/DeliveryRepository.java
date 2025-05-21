@@ -29,4 +29,26 @@ public class DeliveryRepository {
                 .update(keyHolder);
         return keyHolder.getKey().longValue();
     }
+
+    /**
+     * Inserts a new delivery line into the database.
+     *
+     * @param deliveryLine the delivery line to insert (articleId must already be resolved)
+     */
+    public void create(NewDeliveryLine deliveryLine) {
+        var sql = """
+            INSERT INTO InkomendeLeveringsLijnen 
+            (inkomendeLeveringsId, artikelId, aantalGoedgekeurd, aantalTeruggestuurd, magazijnPlaatsId)
+            VALUES (?, ?, ?, ?, ?)
+            """;
+        jdbcClient.sql(sql)
+                .params(
+                        deliveryLine.getIncomingDeliveryId(),
+                        deliveryLine.getArticleId(),
+                        deliveryLine.getApprovedAmount(),
+                        deliveryLine.getReturnedAmount(),
+                        deliveryLine.getWarehouseLocationId()
+                )
+                .update();
+    }
 }

@@ -1,9 +1,8 @@
 package be.vdab.scrumjava202504.deliveries;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("deliveries")
@@ -22,5 +21,16 @@ public class DeliveryController {
     @PostMapping("create")
     public long createDelivery(@RequestBody NewDelivery newDelivery) {
         return deliveryService.createDelivery(newDelivery);
+    }
+
+    /**
+     * Creates a new deliveryLine in the database.
+     *
+     * @param newDeliveryLine the new delivery line to be created
+     */
+    @PostMapping("lines")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createDeliveryLine(@RequestBody @Valid NewDeliveryLine newDeliveryLine) {
+        deliveryService.createDeliveryLine(newDeliveryLine);
     }
 }
