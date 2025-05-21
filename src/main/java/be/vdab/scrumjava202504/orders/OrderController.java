@@ -1,10 +1,7 @@
 package be.vdab.scrumjava202504.orders;
 
 import jakarta.validation.constraints.PositiveOrZero;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,6 +38,11 @@ public class OrderController {
     @GetMapping("/getOrderRoute/{id}")
     public List<PickingItem> getOrderRoute(@PathVariable @PositiveOrZero long id) {
         return orderService.getOrderDetailsByOrderId(id);
+    }
+
+    @PostMapping("/finishOrder/{id}")
+    public void postFinishOrder(@PathVariable @PositiveOrZero long id) {
+        orderService.finishOrder(id);
     }
 }
 

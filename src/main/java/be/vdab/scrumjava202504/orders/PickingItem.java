@@ -28,6 +28,10 @@ public class PickingItem {
         return name;
     }
 
+    public long getProductId() {
+        return productId;
+    }
+
     public int getQuantityOrdered() {
         return quantityOrdered;
     }

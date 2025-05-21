@@ -22,6 +22,4 @@ public class ProductService {
     public List<ProductDetails> findProductDetailsByArtikelIdAndPlace(long artikelid, String shelf, int row) {
         return productRepository.findProductDetailsByArtikelIdAndPlace(artikelid, shelf, row);
     }
-
-    //TODO: connect all the updates together
 }

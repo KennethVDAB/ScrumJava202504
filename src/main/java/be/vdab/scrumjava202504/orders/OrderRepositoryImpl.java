@@ -63,7 +63,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .list();
     }
 
-    Optional<Order> findAndLockById(long orderId) {
+    public Optional<Order> findAndLockById(long orderId) {
         String sql = """
                 SELECT bestelId as id, besteldatum as orderDate, klantId as customerId, betaald as paid, betalingscode as paymentCode, betaalwijzeId as paymentId, bestellingsStatusId as orderStatusId, actiecodeGebruikt as dealCodeUsed, bedrijfsnaam as companyName, btwNummer as BTWNumber, voornaam as firstName, familienaam as lastName, facturatieAdresId as paymentAddressId, leveringsAdresId as shippingAddressId
                 FROM bestellingen
@@ -74,7 +74,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .optional();
     }
 
-    void updateOrderStatus(long orderId, long orderStatusId) {
+    public void updateOrderStatus(long orderId, long orderStatusId) {
         String sql = """
                 UPDATE bestellingen
                 SET bestellingsStatusId = ?
