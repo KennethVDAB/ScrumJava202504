@@ -81,7 +81,7 @@ public class ProductRepository {
 
     public Optional<Product> findProductByEanNumber(String ean) {
         String sql = """
-                SELECT artikelId as productId, ean, naam as name, omschrijving as description, prijs as price, gewichtInGram as weightInGram, voorraad as inStock, minVoorraad as minStock, maxVoorraad as maxStpcl, levertijd as deliveryTime, besteldBijLeverancier as orderedAtSupplier, maxInStockPlaats as maxInStockPlace, leverancierId as supplierId
+                SELECT artikelId as productId,ean,naam as name,beschrijving as description,prijs as price,gewichtInGram as weightInGram,voorraad as inStock,minimumVoorraad as minStock,maximumVoorraad as maxStock,levertijd as deliveryTime,aantalBesteldLeverancier as orderedAtSupplier,maxAantalInMagazijnPLaats as maxInStockPlace,leveranciersId as supplierId
                 FROM Artikelen
                 WHERE ean = ?
                 """;
