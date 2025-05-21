@@ -18,7 +18,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         String sql = """
                 SELECT COUNT(*)
                 FROM Bestellingen
-                WHERE betaald = 1
+                WHERE betaald = TRUE
                 """;
 
         return jdbcClient.sql(sql)
