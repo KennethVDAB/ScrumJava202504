@@ -13,7 +13,12 @@ public class DeliveryController {
     public DeliveryController(DeliveryService deliveryService) {
         this.deliveryService = deliveryService;
     }
-
+    /**
+     * Creates a new delivery in the database.
+     *
+     * @param newDelivery the new delivery to be created
+     * @return the ID of the created delivery
+     */
     @PostMapping("create")
     public long createDelivery(@RequestBody NewDelivery newDelivery) {
         return deliveryService.createDelivery(newDelivery);

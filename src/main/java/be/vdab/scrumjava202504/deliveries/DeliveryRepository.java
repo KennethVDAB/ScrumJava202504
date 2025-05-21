@@ -12,6 +12,12 @@ public class DeliveryRepository {
         this.jdbcClient = jdbcClient;
     }
 
+    /**
+     * Creates a new delivery record in the database.
+     *
+     * @param delivery the delivery object containing the details of the delivery
+     * @return the ID of the newly created delivery record
+     */
     public long create(Delivery delivery) {
         var sql = """
                 INSERT INTO inkomendeleveringen(leveranciersId, leveringsbonNummer, leveringsbonDatum, leverDatum, ontvangerPersoneelslidId)

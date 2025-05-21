@@ -13,6 +13,12 @@ public class DeliveryService {
         this.suppliersRepository = suppliersRepository;
     }
 
+    /**
+     * Creates a new delivery in the database.
+     *
+     * @param newDelivery the new delivery to be created
+     * @return the ID of the created delivery
+     */
     public long createDelivery(NewDelivery newDelivery) {
         var supplierId = suppliersRepository.fetchSupplierIdByName(newDelivery.getSupplierName())
                 .orElseThrow(() -> new IllegalArgumentException("Supplier not found"));

@@ -23,6 +23,12 @@ public class SuppliersRepository {
                 .list();
     }
 
+    /**
+     * Fetches the supplier ID based on the supplier name.
+     *
+     * @param name the name of the supplier
+     * @return an Optional containing the supplier ID if found, or an empty Optional if not found
+     */
     public Optional<Long> fetchSupplierIdByName(String name) {
         var sql = """
                 SELECT leveranciers.leveranciersId as id
