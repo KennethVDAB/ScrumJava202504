@@ -1,6 +1,7 @@
 "use strict";
 
 import {byId, hideElementsById, showElementById} from "./util.js";
+
 const finishedBtn = byId("finishedBtn");
 
 async function getOrdersAndShow(idOrder) {
@@ -27,10 +28,20 @@ async function getOrdersAndShow(idOrder) {
             link.href = "productDetails.html";
             link.classList.add("no-underline");
             link.innerText = order.name;
+
+            // Voeg een eventlistener toe om sessionStorage te vullen bij klikken
+            link.addEventListener("click", () => {
+                const orderData = {
+                    id: order.productId,
+                    position: order.position,
+                    shelf: order.shelf
+                };
+                sessionStorage.setItem("orderData", JSON.stringify(orderData));
+            });
+
             nameCell.appendChild(link);
 
             tr.insertCell().innerText = order.quantityOrdered;
-
 
             const checkboxCell = tr.insertCell();
             const checkbox = document.createElement("input");
@@ -67,6 +78,7 @@ function toggleButtons() {
 // Voeg een eventlistener toe aan de finishedBtn zodat bij klik getOrdersAndShow(2) wordt uitgevoerd.
 finishedBtn.addEventListener("click", async () => {
     const orderIds = JSON.parse(sessionStorage.getItem("orderIds") || '[]');
+
     if (!orderIds.length) {
         showElementById("noOrdersFound");
         hideElementsById("tableOrders");
