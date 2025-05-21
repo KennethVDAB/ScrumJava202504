@@ -23,4 +23,9 @@ public class ProductController {
         }
         return plaatsen;
     }
+
+    @GetMapping("/{artikelId}/{shelf}/{position}")
+    public List<ProductDetails> findProductDetailsByArtikelIdAndPlace( @PathVariable long artikelId, @PathVariable String shelf, @PathVariable int position){
+        return productService.findProductDetailsByArtikelIdAndPlace(artikelId, shelf, position);
+    }
 }

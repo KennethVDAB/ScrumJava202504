@@ -30,6 +30,31 @@ public class ProductRepository {
                 .list();
     }
 
+    public List<ProductDetails> findProductDetailsByArtikelIdAndPlace(long artikelId, String shelf, int position) {
+        var sql = """
+                SELECT artikelen.naam as productName,
+                       artikelen.ean AS ean,
+                       place.rij AS shelf,
+                       place.rek AS position,
+                       place.aantal AS quantityOrdered,
+                       artikelen.prijs AS price,
+                       artikelen.voorraad AS quantityStock,
+                       supplier.naam AS supplier,
+                       (artikelen.gewichtInGram / 1000.0) AS weight
+                FROM artikelen
+                INNER JOIN magazijnplaatsen AS place ON place.artikelid = artikelen.artikelid
+                INNER JOIN leveranciers AS supplier ON supplier.leveranciersId = artikelen.leveranciersId
+                WHERE artikelen.artikelId = ?
+                  AND place.rij = ?
+                  AND place.rek = ?
+                """;
+
+        return jdbcClient.sql(sql)
+                .params(artikelId, shelf, position)
+                .query(ProductDetails.class)
+                .list();
+    }
+
     public void updateStock(long productId, BigDecimal inStock) {
         var sql = """
                 UPDATE Artikelen
