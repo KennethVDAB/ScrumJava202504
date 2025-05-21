@@ -1,5 +1,6 @@
 package be.vdab.scrumjava202504.products;
 
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,5 +22,9 @@ public class ProductService {
 
     public List<ProductDetails> findProductDetailsByArtikelIdAndPlace(long artikelid, String shelf, int row) {
         return productRepository.findProductDetailsByArtikelIdAndPlace(artikelid, shelf, row);
+    }
+
+    public Optional<Product> findProductByEanNumber(String ean) {
+        return productRepository.findProductByEanNumber(ean);
     }
 }
