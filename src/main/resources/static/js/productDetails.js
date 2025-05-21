@@ -21,7 +21,6 @@ try {
 }
 
 function populateProductDetails(product) {
-    console.log(product)
     byId("name").innerText = capitalizeFirstWord(product.productName);
     byId("ean").innerText = product.ean;
     byId("rack").innerText = product.shelf;
