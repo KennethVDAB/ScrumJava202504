@@ -61,6 +61,7 @@
                 <tr>
                     <th>EAN</th>
                     <th>Aantal</th>
+                    <th>Aantal teruggestuurd</th>
                 </tr>
                 </thead>
                 <tbody id="artikellijst">
@@ -90,6 +91,16 @@
                                class="aantal-input"
                                min="1"
                                placeholder="Aantal"
+                               required>
+                    </td>
+                    <td>
+                        <label for="teruggestuurdInput-1" hidden>Aantal teruggestuurd</label>
+                        <input type="number"
+                               id="teruggestuurdInput-1"
+                               name="teruggestuurd"
+                               class="teruggestuurd-input"
+                               min="0"
+                               placeholder="Aantal terug"
                                required>
                     </td>
                 </tr>

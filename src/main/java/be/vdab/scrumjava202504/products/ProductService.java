@@ -24,7 +24,7 @@ public class ProductService {
         return productRepository.findProductDetailsByArtikelIdAndPlace(artikelid, shelf, row);
     }
 
-    public Optional<Product> findProductByEanNumber(String ean) {
+    public Optional<SimpleProductDTO> findProductByEanNumber(String ean) {
         return productRepository.findProductByEanNumber(ean);
     }
 }

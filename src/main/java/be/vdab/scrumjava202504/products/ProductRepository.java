@@ -79,16 +79,16 @@ public class ProductRepository {
                 .optional();
     }
 
-    public Optional<Product> findProductByEanNumber(String ean) {
+    public Optional<SimpleProductDTO> findProductByEanNumber(String ean) {
         String sql = """
-                SELECT artikelId as productId,ean,naam as name,beschrijving as description,prijs as price,gewichtInGram as weightInGram,voorraad as inStock,minimumVoorraad as minStock,maximumVoorraad as maxStock,levertijd as deliveryTime,aantalBesteldLeverancier as orderedAtSupplier,maxAantalInMagazijnPLaats as maxInStockPlace,leveranciersId as supplierId
+                SELECT artikelId as productId, ean, naam as name
                 FROM Artikelen
                 WHERE ean = ?
                 """;
 
         return jdbcClient.sql(sql)
                 .param(ean)
-                .query(Product.class)
+                .query(SimpleProductDTO.class)
                 .optional();
     }
 }
