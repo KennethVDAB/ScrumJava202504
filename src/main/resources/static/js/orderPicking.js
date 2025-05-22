@@ -2,6 +2,8 @@
 
 import {byId, hideElementsById, showElementById} from "./util.js";
 
+const finishedBtn = byId("finishedBtn");
+
 async function getOrdersAndShow(idOrder) {
     const response = await fetch("api/order/getOrderRoute/" + idOrder);
 
@@ -20,9 +22,26 @@ async function getOrdersAndShow(idOrder) {
             const tr = tableBody.insertRow();
             tr.insertCell().innerText = order.shelf;
             tr.insertCell().innerText = order.position;
-            tr.insertCell().innerText = order.name;
-            tr.insertCell().innerText = order.quantityOrdered;
 
+            const nameCell = tr.insertCell();
+            const link = document.createElement("a");
+            link.href = "productDetails.html";
+            link.classList.add("no-underline");
+            link.innerText = order.name;
+
+            // Voeg een eventlistener toe om sessionStorage te vullen bij klikken
+            link.addEventListener("click", () => {
+                const orderData = {
+                    id: order.productId,
+                    position: order.position,
+                    shelf: order.shelf
+                };
+                sessionStorage.setItem("orderData", JSON.stringify(orderData));
+            });
+
+            nameCell.appendChild(link);
+
+            tr.insertCell().innerText = order.quantityOrdered;
 
             const checkboxCell = tr.insertCell();
             const checkbox = document.createElement("input");
@@ -53,19 +72,57 @@ function areAllCheckboxesChecked() {
 
 function toggleButtons() {
     const allChecked = areAllCheckboxesChecked();
-
-    const finishedBtn = document.getElementById("finishedBtn");
-
     finishedBtn.disabled = !allChecked;
 }
 
 // Voeg een eventlistener toe aan de finishedBtn zodat bij klik getOrdersAndShow(2) wordt uitgevoerd.
-document.getElementById("finishedBtn").addEventListener("click", () => {
-    getOrdersAndShow(2);
+finishedBtn.addEventListener("click", async () => {
+    const orderIds = JSON.parse(sessionStorage.getItem("orderIds") || '[]');
+
+    if (!orderIds.length) {
+        showElementById("noOrdersFound");
+        hideElementsById("tableOrders");
+        finishedBtn.disabled = true;
+        return;
+    }
+
+    const isOrderFinished = await finishOrder(orderIds[0]);
+    if(isOrderFinished) {
+        orderIds.shift();
+        sessionStorage.setItem("orderIds", JSON.stringify(orderIds));
+
+        if (orderIds.length > 0) {
+            getOrdersAndShow(orderIds[0]);
+        } else {
+            showElementById("noOrdersFound");
+            hideElementsById("tableOrders");
+            finishedBtn.disabled = true;
+        }
+    } else {
+        showElementById("error");
+        hideElementsById("tableOrders");
+    }
+
 });
 
-document.getElementById("saveBackBtn").addEventListener("click", () => {
+async function finishOrder(orderId) {
+    try {
+        const response = await fetch("api/order/finishOrder/" + orderId, {
+            method: "POST"
+        });
+        return response.ok;
+    } catch (error) {
+        return false;
+    }
+}
+
+byId("saveBackBtn").addEventListener("click", () => {
     window.location.href = "introScreen.html";
 });
 
-getOrdersAndShow(1);
+const storedOrderIds = JSON.parse(sessionStorage.getItem('orderIds') || '[]');
+if (storedOrderIds.length > 0) {
+    getOrdersAndShow(storedOrderIds[0]);
+} else {
+    showElementById("noOrdersFound");
+}

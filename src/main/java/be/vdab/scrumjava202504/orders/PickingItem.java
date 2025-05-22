@@ -30,6 +30,11 @@ public class PickingItem {
 
     public int getPickedQuantity() {
         return pickedQuantity;
+
+    public long getProductId() {
+        return productId;
+    }
+
     }
 
     public boolean isPicked() {

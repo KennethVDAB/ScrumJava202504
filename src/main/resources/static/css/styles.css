@@ -39,8 +39,15 @@ body {
     }
 }
 
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1%;
+}
+
 main {
     padding: 2%;
+    display: flex;
+    flex-direction: column;
 }
 
 /* a-tag */
@@ -141,8 +148,79 @@ td {
     :last-child {
         margin-right: 2%;
     }
+
+    a {
+        margin-right: 2%;
+    }
 }
 
 .no-underline {
     text-decoration: none;
 }
+
+dl {
+    dt {
+        padding-left: 1%;
+        margin-top: 1.5%;
+    }
+
+    dd {
+        padding-left: 2%;
+    }
+}
+
+.w-10 {
+    width: 10%;
+}
+
+.mt-1 {
+    margin-top: 1%;
+}
+
+.text-align-center {
+    text-align: center;
+}
+/* levering opmaak*/
+
+form {
+    margin: 0 auto;
+    padding: 2%;
+    border: 1px solid var(--grey-color);
+    border-radius: var(--border-radius);
+    background-color: var(--white-color);
+
+    h2 {
+        color: var(--primary-color);
+        margin: 2% 0 1% 0;
+        font-size: 1.25rem;
+    }
+}
+    fieldset {
+        border: 1px solid var(--grey-color);
+        border-radius: var(--border-radius);
+        padding: 2%;
+        margin-bottom: 2%;
+
+        div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+    }
+
+    label {
+        display: inline-block;
+        width: 200px;
+        margin-bottom: 0.5rem;
+        vertical-align: top;
+    }
+
+   form input,
+   form select,
+    #artikellijst input {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--grey-color);
+        padding: 0.5rem;
+    }

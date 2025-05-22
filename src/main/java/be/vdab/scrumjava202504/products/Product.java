@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Product {
     private final long productId;
-    private final long ean;
+    private final String ean;
     private final String name;
     private final String description;
     private final BigDecimal price;
@@ -17,7 +17,7 @@ public class Product {
     private final BigDecimal maxInStockPlace;
     private final int supplierId;
 
-    public Product(long productId, long ean, String name, String description, BigDecimal price, BigDecimal weightInGram, BigDecimal inStock, BigDecimal minStock, BigDecimal maxStock, int deliveryTime, BigDecimal orderedAtSupplier, BigDecimal maxInStockPlace, int supplierId) {
+    public Product(long productId, String ean, String name, String description, BigDecimal price, BigDecimal weightInGram, BigDecimal inStock, BigDecimal minStock, BigDecimal maxStock, int deliveryTime, BigDecimal orderedAtSupplier, BigDecimal maxInStockPlace, int supplierId) {
         this.productId = productId;
         this.ean = ean;
         this.name = name;
@@ -37,7 +37,7 @@ public class Product {
         return productId;
     }
 
-    public long getEan() {
+    public String getEan() {
         return ean;
     }
 
