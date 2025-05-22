@@ -17,6 +17,7 @@ public class DeliveryService {
     private final SuppliersRepository suppliersRepository;
     private final ProductRepository productRepository;
     private final WarehouseLocationRepository warehouseLocationRepository;
+    private Map<Long, PlacementItem> currentPlacementPlan = new HashMap<>();
 
     public DeliveryService(DeliveryRepository deliveryRepository, SuppliersRepository suppliersRepository, ProductRepository productRepository, WarehouseLocationRepository warehouseLocationRepository) {
         this.deliveryRepository = deliveryRepository;
@@ -53,6 +54,19 @@ public class DeliveryService {
                 .orElseThrow(() -> new IllegalArgumentException("No article found for EAN: " + newDeliveryLine.getEan()));
 
         newDeliveryLine.setArticleId(article.getProductId());
+
+        PlacementItem placement = currentPlacementPlan.get(article.getProductId());
+        if (placement == null) {
+            throw new IllegalStateException("No placement plan found for product: " + article.getProductId());
+        }
+
+        var location = warehouseLocationRepository.findBySelfAndPositionAndLockById(
+                        placement.getShelf(),
+                        placement.getPosition())
+                .orElseThrow(() -> new IllegalStateException(
+                        "Location not found: " + placement.getShelf() + "-" + placement.getPosition()));
+
+        newDeliveryLine.setWarehouseLocationId((int) location.getId());
 
         deliveryRepository.create(newDeliveryLine);
     }
