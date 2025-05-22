@@ -42,39 +42,51 @@ async function getSuppliers() {
     }
 }
 
-eanInput.addEventListener('blur', () => {
-    const ean = eanInput.value.trim();
-    if (ean && !/^\d{13}$/.test(ean)) {
-        eanWarning.textContent = 'EAN moet precies 13 cijfers bevatten.';
-        articleAddBtn.disabled = true;
-    }
-});
-
-[
-    {input: quantityGoodInput, warning: quantityGoodWarning},
-    {input: quantityDamagedInput, warning: quantityDamagedWarning}
-].forEach(({input, warning}) => {
-    input.addEventListener('blur', (event) => {
-        const value = event.target.value.trim();
-        if (!value || isNaN(value) || Number(value) < 0) {
-            warning.textContent = 'Aantal mag niet leeg zijn of negatief';
-            articleAddBtn.disabled = true;
-        }
-    });
-});
-
 [eanInput, quantityGoodInput, quantityDamagedInput].forEach(input => {
-    input.addEventListener('input', () => {
+    input.addEventListener('focus', () => {
+        [eanInput, quantityGoodInput, quantityDamagedInput].forEach(inputI => {
+            inputI.style.border = "1px solid #A8A8A8";
+            inputI.textContent = "";
+        });
         eanWarning.textContent = '';
         quantityGoodWarning.textContent = '';
         quantityDamagedWarning.textContent = '';
+        error.textContent = "";
         articleAddBtn.disabled = false;
     });
 });
 
 articleAddBtn.addEventListener("click", async () => {
     error.textContent = "";
+    let hasError = false;
+
     const ean = eanInput.value.trim();
+    const quantityGood = quantityGoodInput.value.trim();
+    const quantityDamaged = quantityDamagedInput.value.trim();
+
+    if(!ean || (ean && !/^\d{13}$/.test(ean))) {
+        eanInput.style.border = "1px solid rgb(204,121,167)";
+        eanWarning.textContent = 'EAN moet precies 13 cijfers bevatten.';
+        hasError = true;
+    }
+
+    if(!quantityGood || isNaN(quantityGood) || Number(quantityGood) < 0) {
+        quantityGoodInput.style.border = "1px solid rgb(204,121,167)";
+        quantityGoodWarning.textContent = 'Aantal mag niet leeg zijn of negatief';
+        hasError = true;
+    }
+
+    if(!quantityDamaged || isNaN(quantityDamaged) || Number(quantityDamaged) < 0) {
+        quantityDamagedInput.style.border = "1px solid rgb(204,121,167)";
+        quantityDamagedWarning.textContent = 'Aantal mag niet leeg zijn of negatief';
+        hasError = true;
+    }
+
+    if(hasError) {
+        articleAddBtn.disabled = true;
+        return;
+    }
+
     try {
         const response = await fetch(`/api/products/${ean}`);
         if (!response.ok) {
@@ -83,26 +95,69 @@ articleAddBtn.addEventListener("click", async () => {
                 clearAllInputs();
             } else {
                 error.textContent = `Fout bij het ophalen van gegevens over artikel: ${ean}`;
+                clearAllInputs();
             }
             return;
         }
         const product = await response.json();
-        addArticle(product, quantityGoodInput.value.trim(), quantityDamagedInput.value.trim());
+        storeArticle(product, quantityGood, quantityDamaged);
     } catch (error) {
         error.textContent = "Er is een probleem, probeer het later opnieuw!";
+        clearAllInputs();
     }
 });
 
-function addArticle(product, quantityGood, quantityDamaged) {
+function storeArticle (product, quantityGood, quantityDamaged) {
+    let articles = JSON.parse(sessionStorage.getItem("articles")) || [];
+    const exists = articles.some(article => article.productId === product.productId);
+    if (exists) {
+        error.textContent = `Artikel ${product.name} is al toegevoegd.`
+        return;
+    }
+    const article = {
+        productId: product.productId,
+        ean: product.ean,
+        name: product.name,
+        quantityGood: quantityGood,
+        quantityDamaged: quantityDamaged
+    }
+    articles.push(article);
+    sessionStorage.setItem("articles", JSON.stringify(articles));
+    addArticleToTable(article);
+}
+
+function addArticleToTable(article) {
     if (articleContainer.hidden) {
         articleContainer.hidden = false;
     }
     const tr = document.createElement("tr");
-    tr.id = product.id;
+    tr.id = article.productId;
     tr.innerHTML = `
-    <td>${product.ean}</td><td>${product.name}</td><td>${quantityGood}</td><td>${quantityDamaged}</td>
+        <td>${article.ean}</td>
+        <td>${article.name}</td>
+        <td>${article.quantityGood}</td>
+        <td>${article.quantityDamaged}</td>
+        <td><button class="delete-btn">✖️</button></td>
     `
     articleList.append(tr);
+
+    tr.querySelector(".delete-btn").addEventListener("click", () => {
+        deleteArticle(article.productId);
+    });
+}
+
+function deleteArticle(productId) {
+    const row = document.getElementById(productId);
+    if (row) {
+        row.remove();
+    }
+
+    let articles = JSON.parse(sessionStorage.getItem("articles")) || [];
+    articles = articles.filter(article => article.productId !== productId);
+    sessionStorage.setItem("articles", JSON.stringify(articles));
+    if (articles.length === 0) {
+        articleContainer.hidden = true;
+    }
 }
 
 function clearAllInputs() {
@@ -115,6 +170,7 @@ function clearAllInputs() {
     input.addEventListener("focus", () => {
         [supplierInput, deliveryTicketNumberInput, deliveryTicketDateInput, deliveryDateInput].forEach(inputI => {
             inputI.style.border = "1px solid #A8A8A8";
+            inputI.textContent = "";
         });
         supplierSubmit.disabled = false;
         error.textContent = '';
@@ -179,7 +235,6 @@ supplierSubmit.addEventListener("click", async (event) => {
     } catch (error) {
         error.textContent = "Er is een probleem, probeer het later opnieuw!";
     }
-
 })
 
 
