@@ -19,7 +19,7 @@ public class SimpleProductDTO {
         return ean;
     }
 
-    public int getProductId() {
+    public long getProductId() {
         return productId;
     }
 }
