@@ -46,7 +46,7 @@ public class DeliveryController {
      * @return A list of {@link PlacementItem} objects representing the placement plan.
      */
 
-    @PostMapping("/placement-plan")
+    @PostMapping("placement-plan")
     public List<PlacementItem> getPlacementPlan(@RequestBody Map<Long, Integer> deliveredProducts) {
         return deliveryService.calculateMostEfficientPlacingRoute(deliveredProducts);
     }
