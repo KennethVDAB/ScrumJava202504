@@ -9,6 +9,10 @@ const articleAddBtn = byId("artikelToevoegenKnop");
 const articleContainer = byId("articleContainer");
 const articleList = byId("articleList");
 const supplierSubmit = byId("submitSupplier");
+const supplierInput = byId("leverancier");
+const deliveryTicketNumberInput = byId("leveringsbonnummer");
+const deliveryTicketDateInput = byId("leveringsbondatum");
+const deliveryDateInput = byId("leverdatum");
 
 const eanWarning = byId("eanWarning");
 const quantityGoodWarning = byId("quantityGoodWarning");
@@ -78,7 +82,7 @@ articleAddBtn.addEventListener("click", async () => {
                 error.textContent = `Artikel niet gevonden voor deze EAN: ${ean}`;
                 clearAllInputs();
             } else {
-               error.textContent = `Fout bij het ophalen van gegevens over artikel: ${ean}`;
+                error.textContent = `Fout bij het ophalen van gegevens over artikel: ${ean}`;
             }
             return;
         }
@@ -90,7 +94,7 @@ articleAddBtn.addEventListener("click", async () => {
 });
 
 function addArticle(product, quantityGood, quantityDamaged) {
-    if(articleContainer.hidden) {
+    if (articleContainer.hidden) {
         articleContainer.hidden = false;
     }
     const tr = document.createElement("tr");
@@ -107,18 +111,47 @@ function clearAllInputs() {
     quantityGoodWarning.value = '';
 }
 
+[supplierInput, deliveryTicketNumberInput, deliveryTicketDateInput, deliveryDateInput].forEach(input => {
+    input.addEventListener("focus", () => {
+        [supplierInput, deliveryTicketNumberInput, deliveryTicketDateInput, deliveryDateInput].forEach(inputI => {
+            inputI.style.border = "1px solid #A8A8A8";
+        });
+        supplierSubmit.disabled = false;
+        error.textContent = '';
+    })
+});
+
 supplierSubmit.addEventListener("click", async (event) => {
     event.preventDefault();
     error.textContent = "";
+    let hasError = false;
 
-    const supplierSelected = byId("leverancier").selectedIndex;
-    const supplierName = byId("leverancier").options[supplierSelected].text;
-    const deliveryTicketNumber = byId("leveringsbonnummer").value.trim();
-    const deliveryTicketDate = byId("leveringsbondatum").value;
-    const deliveryDate = byId("leverdatum").value;
+    const supplierName = supplierInput.options[supplierInput.selectedIndex].text;
+    const deliveryTicketNumber = deliveryTicketNumberInput.value.trim();
+    const deliveryTicketDate = deliveryTicketDateInput.value;
+    const deliveryDate = deliveryDateInput.value;
 
-    if (!supplierName || !deliveryTicketNumber || !deliveryTicketDate || !deliveryDate) {
+    if (!supplierName || supplierName === "-- Selecteer een leverancier --") {
+        supplierInput.style.border = "1px solid rgb(204,121,167)";
+        hasError = true;
+    }
+    if (!deliveryTicketNumber) {
+        deliveryTicketNumberInput.style.border = "1px solid rgb(204,121,167)";
+        hasError = true;
+    }
+    if (!deliveryTicketDate) {
+        deliveryTicketDateInput.style.border = "1px solid rgb(204,121,167)";
+        hasError = true;
+    }
+
+    if (!deliveryDate) {
+        deliveryDateInput.style.border = "1px solid rgb(204,121,167)";
+        hasError = true;
+    }
+
+    if (hasError) {
         error.textContent = "Alle velden zijn verplicht.";
+        supplierSubmit.disabled = true;
         return;
     }
 
