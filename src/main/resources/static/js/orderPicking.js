@@ -41,7 +41,7 @@ async function getOrdersAndShow(idOrder) {
 
             nameCell.appendChild(link);
 
-            tr.insertCell().innerText = order.quantityOrdered;
+            tr.insertCell().innerText = order.pickedQuantity;
 
             const checkboxCell = tr.insertCell();
             const checkbox = document.createElement("input");
