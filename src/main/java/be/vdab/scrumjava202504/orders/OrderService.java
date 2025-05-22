@@ -209,7 +209,7 @@ public class OrderService {
         this.orderRepository.findAndLockById(orderId).ifPresentOrElse(order -> {
 
             this.getOrderDetailsByOrderId(orderId).forEach(pickingItem -> {
-                BigDecimal quantityOrdered = BigDecimal.valueOf(pickingItem.getQuantityOrdered());
+                BigDecimal quantityOrdered = BigDecimal.valueOf(pickingItem.getPickedQuantity());
 
                 this.productRepository.updateStock(pickingItem.getProductId(), quantityOrdered);
 
