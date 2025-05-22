@@ -2,6 +2,7 @@ package be.vdab.scrumjava202504.orders;
 
 import be.vdab.scrumjava202504.products.ProductDTO;
 import be.vdab.scrumjava202504.products.ProductRepository;
+import be.vdab.scrumjava202504.warehouseLocations.WarehouseLocationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +24,13 @@ public class PickingServiceTest {
     private OrderRepository orderRepository;
     private ProductRepository productRepository;
     private OrderService orderService;
+    private WarehouseLocationRepository warehouseLocationRepository;
 
     @BeforeEach
     void setUp() {
         orderRepository = mock(OrderRepository.class);
         productRepository = mock(ProductRepository.class);
-        orderService = Mockito.spy(new OrderService(orderRepository, productRepository));
+        orderService = Mockito.spy(new OrderService(orderRepository, productRepository, warehouseLocationRepository));
     }
 
     @Test
