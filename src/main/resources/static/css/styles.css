@@ -224,3 +224,15 @@ form {
         border: 1px solid var(--grey-color);
         padding: 0.5rem;
     }
+
+.warning {
+    color: rgb(204,121,167);
+    font-size: 0.9em;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 60px;
+    justify-content: flex-start;
+}
