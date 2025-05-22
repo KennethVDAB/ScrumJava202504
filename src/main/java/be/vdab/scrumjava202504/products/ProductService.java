@@ -1,8 +1,5 @@
 package be.vdab.scrumjava202504.products;
 
-import java.util.Optional;
-
-import be.vdab.scrumjava202504.exception.ProductNotFoundException;
 import be.vdab.scrumjava202504.exception.ProductWithEanNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
