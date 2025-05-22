@@ -164,7 +164,7 @@ public class OrderService {
      * @param location the {@code ProductDTO} object representing the product location
      * @return the computed route cost (in steps) as an {@code int}
      */
-    private int calculateRouteCost(ProductDTO location) {
+    int calculateRouteCost(ProductDTO location) {
         // Retrieve the numeric value of the shelf letter using LetterToNumber.
         int shelfFactor = LetterToNumber.getNumberOfChar(location.getShelf().charAt(0));
 
