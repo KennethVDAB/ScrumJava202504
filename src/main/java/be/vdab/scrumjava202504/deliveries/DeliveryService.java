@@ -148,7 +148,4 @@ public class DeliveryService {
                         .thenComparingInt(PlacementItem::getPosition))
                 .collect(Collectors.toList());
     }
-
-
-
 }

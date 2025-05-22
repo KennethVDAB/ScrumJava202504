@@ -75,12 +75,14 @@ public class OrderService {
      * calculates the optimal picking instructions based on route cost (including both shelf and position factors),
      * and returns an organized list of {@code PickingItem} objects sorted by shelf and position.
      *
-     * @param orderId the identifier of the order for which picking details are to be retrieved
      * @return a list of {@code PickingItem} objects, each representing a product location and the quantity to pick
      */
-    public List<PickingItem> getOrderDetailsByOrderId(long orderId) {
+    public List<PickingItem> getOrderDetailsByOrderId() {
+
+        DisplayOrder displayOrder = this.orderRepository.getDisplayOrders().getFirst();
+
         // Retrieve the products and their ordered quantities for the given order.
-        Map<Long, BigDecimal> orderedProductsWithQuantity = orderRepository.getOrderDetailsByOrderId(orderId)
+        Map<Long, BigDecimal> orderedProductsWithQuantity = orderRepository.getOrderDetailsByOrderId(displayOrder.getId())
                 .stream()
                 .collect(Collectors.toMap(OrderDetails::getProductId, OrderDetails::getQuantityOrder));
 
@@ -94,7 +96,7 @@ public class OrderService {
             List<ProductDTO> candidateLocations = productRepository.findByArtikelId(productId);
 
             // Calculate the picking items for this product using the new route cost method.
-            List<PickingItem> pickingItems = getEfficientPickingItemsForProduct(productId, quantityAsked, candidateLocations);
+            List<PickingItem> pickingItems = getEfficientPickingItemsForProduct(productId, quantityAsked, candidateLocations, displayOrder.getId());
 
             result.addAll(pickingItems);
         });
@@ -118,7 +120,7 @@ public class OrderService {
      * @param candidateLocations the list of available product locations
      * @return a list of {@code PickingItem} objects representing the selected product locations and the picked quantity
      */
-    private List<PickingItem> getEfficientPickingItemsForProduct(long productId, int quantityAsked, List<ProductDTO> candidateLocations) {
+    private List<PickingItem> getEfficientPickingItemsForProduct(long productId, int quantityAsked, List<ProductDTO> candidateLocations, long orderId) {
         // First, sort the locations based on the computed round-trip route cost.
         List<ProductDTO> sortedLocations = candidateLocations.stream()
                 .sorted(Comparator.comparingInt(this::calculateRouteCost))
@@ -144,7 +146,9 @@ public class OrderService {
                         candidate.getPosition(),
                         candidate.getName(),
                         qtyToPick,
-                        productId
+                        productId,
+                        orderId
+
                 ));
                 remaining -= qtyToPick;
             }
@@ -208,7 +212,7 @@ public class OrderService {
     public void finishOrder(@PositiveOrZero long orderId) {
         this.orderRepository.findAndLockById(orderId).ifPresentOrElse(order -> {
 
-            this.getOrderDetailsByOrderId(orderId).forEach(pickingItem -> {
+            this.getOrderDetailsByOrderId().forEach(pickingItem -> {
                 BigDecimal quantityOrdered = BigDecimal.valueOf(pickingItem.getPickedQuantity());
 
                 this.productRepository.updateStock(pickingItem.getProductId(), quantityOrdered);

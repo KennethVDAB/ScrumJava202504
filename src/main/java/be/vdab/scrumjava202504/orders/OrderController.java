@@ -35,9 +35,9 @@ public class OrderController {
      * @param id The unique identifier of the order for which the picking route is requested.
      * @return A list of {@link PickingItem} objects representing the optimized picking sequence.
      */
-    @GetMapping("/getOrderRoute/{id}")
-    public List<PickingItem> getOrderRoute(@PathVariable @PositiveOrZero long id) {
-        return orderService.getOrderDetailsByOrderId(id);
+    @GetMapping("/getOrderRoute/")
+    public List<PickingItem> getOrderRoute() {
+        return orderService.getOrderDetailsByOrderId();
     }
 
     @PostMapping("/finishOrder/{id}")

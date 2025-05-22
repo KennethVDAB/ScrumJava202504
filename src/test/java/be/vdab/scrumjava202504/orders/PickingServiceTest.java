@@ -47,7 +47,7 @@ public class PickingServiceTest {
         when(productRepository.findByArtikelId(productId)).thenReturn(List.of(location));
 
         // Roep de methode aan
-        List<PickingItem> result = orderService.getOrderDetailsByOrderId(orderId);
+        List<PickingItem> result = orderService.getOrderDetailsByOrderId();
 
         // Controleer
         assertEquals(1, result.size());
@@ -78,7 +78,7 @@ public class PickingServiceTest {
                 .thenReturn(List.of(locatie1, locatie2, locatie3));
 
 
-        List<PickingItem> result = orderService.getOrderDetailsByOrderId(orderId);
+        List<PickingItem> result = orderService.getOrderDetailsByOrderId();
 
         // Controle: moet eerst A5 gebruiken (max 3), dan B10 (rest 3), C20 niet gebruiken
         assertEquals(2, result.size());
@@ -108,7 +108,7 @@ public class PickingServiceTest {
 
         when(productRepository.findByArtikelId(productId)).thenReturn(List.of(locatie1, locatie2, locatie3));
 
-        List<PickingItem> result = orderService.getOrderDetailsByOrderId(orderId);
+        List<PickingItem> result = orderService.getOrderDetailsByOrderId();
 
         // Sortering is A1, A2, B2
         assertEquals("A", result.get(0).getShelf());
@@ -126,7 +126,7 @@ public class PickingServiceTest {
         long orderId = 103L;
         when(orderRepository.getOrderDetailsByOrderId(orderId)).thenReturn(List.of());
 
-        List<PickingItem> result = orderService.getOrderDetailsByOrderId(orderId);
+        List<PickingItem> result = orderService.getOrderDetailsByOrderId();
 
         assertTrue(result.isEmpty());
     }
