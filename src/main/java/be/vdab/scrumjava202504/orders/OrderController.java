@@ -32,7 +32,6 @@ public class OrderController {
     /**
      * Retrieves an optimized picking route for the given order ID.
      *
-     * @param id The unique identifier of the order for which the picking route is requested.
      * @return A list of {@link PickingItem} objects representing the optimized picking sequence.
      */
     @GetMapping("/getOrderRoute/")
