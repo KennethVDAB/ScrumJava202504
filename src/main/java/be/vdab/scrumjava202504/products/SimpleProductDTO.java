@@ -3,9 +3,9 @@ package be.vdab.scrumjava202504.products;
 public class SimpleProductDTO {
     private String name;
     private String ean;
-    private int productId;
+    private long productId;
 
-    public SimpleProductDTO(String ean, int productId, String name) {
+    public SimpleProductDTO(String ean, long productId, String name) {
         this.name = name;
         this.ean = ean;
         this.productId = productId;
@@ -19,7 +19,7 @@ public class SimpleProductDTO {
         return ean;
     }
 
-    public int getProductId() {
+    public long getProductId() {
         return productId;
     }
 }
