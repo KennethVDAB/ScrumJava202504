@@ -12,11 +12,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@RequiredArgsConstructor
 public class OrderControllerTest {
     private final String ORDERS_TABLE_NAME = "bestellingen";
     private final MockMvcTester mockMvcTester;
     private final JdbcClient jdbcClient;
+
+    public OrderControllerTest(MockMvcTester mockMvcTester, JdbcClient jdbcClient) {
+        this.mockMvcTester = mockMvcTester;
+        this.jdbcClient = jdbcClient;
+    }
 
     @Test
     void findOrdersCount_Success() {
