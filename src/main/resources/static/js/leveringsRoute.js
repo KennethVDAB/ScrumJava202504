@@ -57,6 +57,8 @@ bevestigBtn.addEventListener("click", async () => {
     const articles = JSON.parse(sessionStorage.getItem("articles") || "[]");
     const incomingDeliveryId = parseInt(sessionStorage.getItem("incomingDeliveryId"));
 
+    debugger;
+
     for (const row of rows) {
         const naam = row.cells[2].innerText;
         const aantal = parseInt(row.cells[3].innerText);
@@ -96,6 +98,4 @@ bevestigBtn.addEventListener("click", async () => {
             console.error("Netwerkfout bij verzenden van delivery line:", error);
         }
     }
-
-    alert("Alle bevestigde producten zijn verwerkt.");
 });
