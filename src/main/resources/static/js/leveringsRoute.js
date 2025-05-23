@@ -7,6 +7,8 @@ const tableBody = byId("tableBody");
 
 const deliveredProducts = JSON.parse(sessionStorage.getItem("productData") || "{}");
 
+sessionStorage.setItem("productData", {});
+
 fetchPlacementPlan(deliveredProducts);
 
 async function fetchPlacementPlan(products) {
