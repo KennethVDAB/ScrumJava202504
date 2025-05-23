@@ -46,6 +46,9 @@ public class PickingServiceTest {
         ProductDTO location = new ProductDTO("A", 10, "Product A", 5, (int) productId);
         when(productRepository.findByArtikelId(productId)).thenReturn(List.of(location));
 
+        DisplayOrder displayOrder = new DisplayOrder(orderId, 3, BigDecimal.valueOf(10));
+        when(orderRepository.getDisplayOrders()).thenReturn(List.of(displayOrder));
+
         // Roep de methode aan
         List<PickingItem> result = orderService.getOrderDetailsByOrderId();
 
@@ -76,6 +79,9 @@ public class PickingServiceTest {
 
         when(productRepository.findByArtikelId(productId))
                 .thenReturn(List.of(locatie1, locatie2, locatie3));
+
+        DisplayOrder displayOrder = new DisplayOrder(orderId, 3, BigDecimal.valueOf(10));
+        when(orderRepository.getDisplayOrders()).thenReturn(List.of(displayOrder));
 
 
         List<PickingItem> result = orderService.getOrderDetailsByOrderId();
@@ -108,6 +114,9 @@ public class PickingServiceTest {
 
         when(productRepository.findByArtikelId(productId)).thenReturn(List.of(locatie1, locatie2, locatie3));
 
+        DisplayOrder displayOrder = new DisplayOrder(orderId, 3, BigDecimal.valueOf(10));
+        when(orderRepository.getDisplayOrders()).thenReturn(List.of(displayOrder));
+
         List<PickingItem> result = orderService.getOrderDetailsByOrderId();
 
         // Sortering is A1, A2, B2
@@ -125,6 +134,9 @@ public class PickingServiceTest {
     void testGetOrderDetailsByOrderId_returnsEmptyListWhenNoProducts() {
         long orderId = 103L;
         when(orderRepository.getOrderDetailsByOrderId(orderId)).thenReturn(List.of());
+
+        DisplayOrder displayOrder = new DisplayOrder(orderId, 3, BigDecimal.valueOf(10));
+        when(orderRepository.getDisplayOrders()).thenReturn(List.of(displayOrder));
 
         List<PickingItem> result = orderService.getOrderDetailsByOrderId();
 
