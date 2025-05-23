@@ -164,7 +164,7 @@ function deleteArticle(productId) {
 function clearAllInputs() {
     eanInput.value = '';
     quantityDamagedInput.value = '';
-    quantityGoodWarning.value = '';
+    quantityGoodInput.value = '';
 }
 
 [supplierInput, deliveryTicketNumberInput, deliveryTicketDateInput, deliveryDateInput].forEach(input => {
