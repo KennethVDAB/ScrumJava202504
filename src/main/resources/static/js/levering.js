@@ -143,6 +143,7 @@ function addArticleToTable(article) {
 
     tr.querySelector(".delete-btn").addEventListener("click", () => {
         deleteArticle(article.productId);
+        clearAllInputs();
     });
 }
 
@@ -169,8 +170,12 @@ function clearAllInputs() {
 [supplierInput, deliveryTicketNumberInput, deliveryTicketDateInput, deliveryDateInput].forEach(input => {
     input.addEventListener("focus", () => {
         [supplierInput, deliveryTicketNumberInput, deliveryTicketDateInput, deliveryDateInput].forEach(inputI => {
-            inputI.style.border = "1px solid #A8A8A8";
-            inputI.textContent = "";
+            if (inputI.tagName === "INPUT") {
+                inputI.style.border = "1px solid #A8A8A8";
+                inputI.textContent = "";
+            } else{
+                inputI.style.border = "1px solid #A8A8A8";
+            }
         });
         supplierSubmit.disabled = false;
         error.textContent = '';
