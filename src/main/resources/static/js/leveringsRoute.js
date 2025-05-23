@@ -5,12 +5,7 @@ import {byId} from "./util.js";
 const bevestigBtn = byId("bevestigBtn");
 const tableBody = byId("tableBody");
 
-// Simuleer geleverde producten (vervang dit met echte data)
-const deliveredProducts = {
-    1: 3,
-    2: 5,
-    3: 2
-};
+const deliveredProducts = JSON.parse(sessionStorage.getItem("productData") || "{}");
 
 fetchPlacementPlan(deliveredProducts);
 
@@ -55,37 +50,32 @@ function toggleConfirmButton() {
     bevestigBtn.disabled = !allChecked;
 }
 
-
 bevestigBtn.addEventListener("click", async () => {
     const rows = document.querySelectorAll("#tableBody tr");
+    const articles = JSON.parse(sessionStorage.getItem("articles") || "[]");
+    const incomingDeliveryId = parseInt(sessionStorage.getItem("incomingDeliveryId"));
 
     for (const row of rows) {
-        const rek = row.cells[0].innerText;
-        const plaats = parseInt(row.cells[1].innerText);
         const naam = row.cells[2].innerText;
         const aantal = parseInt(row.cells[3].innerText);
         const checkbox = row.cells[4].querySelector("input[type='checkbox']");
 
         if (!checkbox.checked) continue;
 
-        // Haal extra info op uit sessionStorage of een andere bron
-        const productData = JSON.parse(sessionStorage.getItem("productData") || "{}");
-        const productId = productData[naam]?.productId;
-        const ean = productData[naam]?.ean;
-        const incomingDeliveryId = parseInt(sessionStorage.getItem("incomingDeliveryId"));
+        const article = articles.find(a => a.name === naam);
 
-        if (!productId || !ean || !incomingDeliveryId) {
+        if (!article || !incomingDeliveryId) {
             console.error("Ontbrekende gegevens voor product:", naam);
             continue;
         }
 
         const newDeliveryLine = {
             incomingDeliveryId: incomingDeliveryId,
-            ean: ean,
+            ean: article.ean,
             approvedAmount: aantal,
             returnedAmount: 0,
             warehouseLocationId: null, // Wordt in backend bepaald
-            articleId: productId
+            articleId: article.productId
         };
 
         try {
@@ -107,4 +97,3 @@ bevestigBtn.addEventListener("click", async () => {
 
     alert("Alle bevestigde producten zijn verwerkt.");
 });
-
