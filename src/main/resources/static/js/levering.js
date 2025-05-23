@@ -103,8 +103,8 @@ articleAddBtn.addEventListener("click", async () => {
         storeArticle(product, quantityGood, quantityDamaged);
     } catch (error) {
         error.textContent = "Er is een probleem, probeer het later opnieuw!";
-        clearAllInputs();
     }
+    clearAllInputs();
 });
 
 function storeArticle (product, quantityGood, quantityDamaged) {
