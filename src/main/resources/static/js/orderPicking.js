@@ -1,50 +1,80 @@
 "use strict";
 
-import {byId, hideElementsById, showElementById} from "./util.js";
+import { byId, hideElementsById, showElementById } from "./util.js";
 
-async function getOrdersAndShow(idOrder) {
-    const response = await fetch("api/order/getOrderRoute/" + idOrder);
+const finishedBtn = byId("finishedBtn");
+let orderId = 99999;
 
-    hideElementsById("noOrdersFound");
-    hideElementsById("error");
-    showElementById("tableOrders");
+async function getOrdersAndShow() {
+    try {
+        const response = await fetch("api/order/getOrderRoute/");
 
-    const tableBody = byId("tableBody");
+        hideElementsById("noOrdersFound");
+        hideElementsById("error");
+        showElementById("tableOrders");
 
-    tableBody.innerHTML = "";
+        const tableBody = byId("tableBody");
+        tableBody.innerHTML = "";
 
-    if (response.ok) {
-        const orders = await response.json();
+        if (response.ok) {
+            const orders = await response.json();
 
-        orders.forEach(order => {
-            const tr = tableBody.insertRow();
-            tr.insertCell().innerText = order.shelf;
-            tr.insertCell().innerText = order.position;
-            tr.insertCell().innerText = order.name;
-            tr.insertCell().innerText = order.quantityOrdered;
+            console.info(orders);
 
+            if (orders.length > 0) {
+                orderId = orders[0].orderId;
+                console.log("OrderId set op:", orderId);
+            } else {
+                console.error("Geen bestellingen gevonden, orderId blijft ongewijzigd");
+                showElementById("noOrdersFound");
+                hideElementsById("tableOrders");
+                return;
+            }
 
-            const checkboxCell = tr.insertCell();
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
+            orders.forEach(order => {
+                const tr = tableBody.insertRow();
+                tr.insertCell().innerText = order.shelf;
+                tr.insertCell().innerText = order.position;
 
-            checkbox.addEventListener("change", toggleButtons);
+                const nameCell = tr.insertCell();
+                const link = document.createElement("a");
+                link.href = "productDetails.html";
+                link.classList.add("no-underline");
+                link.innerText = order.name;
 
-            checkboxCell.appendChild(checkbox);
-        });
+                // Voeg een eventlistener toe om sessionStorage te vullen bij klikken
+                link.addEventListener("click", () => {
+                    const orderData = {
+                        id: order.productId,
+                        position: order.position,
+                        shelf: order.shelf
+                    };
+                    sessionStorage.setItem("orderData", JSON.stringify(orderData));
+                });
 
-        toggleButtons();
+                nameCell.appendChild(link);
 
-        if (orders.length === 0) {
-            showElementById("noOrdersFound");
+                tr.insertCell().innerText = order.pickedQuantity;
+
+                const checkboxCell = tr.insertCell();
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+
+                checkbox.addEventListener("change", toggleButtons);
+                checkboxCell.appendChild(checkbox);
+            });
+
+            toggleButtons();
+        } else {
+            showElementById("error");
             hideElementsById("tableOrders");
         }
-    } else {
+    } catch (error) {
+        console.error("Fout bij ophalen van bestellingen:", error);
         showElementById("error");
         hideElementsById("tableOrders");
     }
 }
-
 
 function areAllCheckboxesChecked() {
     const checkboxes = document.querySelectorAll("input[type='checkbox']");
@@ -53,19 +83,34 @@ function areAllCheckboxesChecked() {
 
 function toggleButtons() {
     const allChecked = areAllCheckboxesChecked();
-
-    const finishedBtn = document.getElementById("finishedBtn");
-
     finishedBtn.disabled = !allChecked;
 }
 
-// Voeg een eventlistener toe aan de finishedBtn zodat bij klik getOrdersAndShow(2) wordt uitgevoerd.
-document.getElementById("finishedBtn").addEventListener("click", () => {
-    getOrdersAndShow(2);
+// Voeg een eventlistener toe aan finishedBtn zodat bij klik getOrdersAndShow() wordt uitgevoerd.
+finishedBtn.addEventListener("click", async () => {
+    const isOrderFinished = await finishOrder(orderId);
+    if (isOrderFinished) {
+        console.log("Bestelling succesvol afgerond.");
+        getOrdersAndShow();
+    } else {
+        console.error("Fout bij afronden van bestelling.");
+    }
 });
 
-document.getElementById("saveBackBtn").addEventListener("click", () => {
+async function finishOrder(orderId) {
+    try {
+        const response = await fetch("api/order/finishOrder/" + orderId, {
+            method: "POST"
+        });
+        return response.ok;
+    } catch (error) {
+        console.error("Fout bij afronden van bestelling:", error);
+        return false;
+    }
+}
+
+byId("saveBackBtn").addEventListener("click", () => {
     window.location.href = "introScreen.html";
 });
 
-getOrdersAndShow(1);
+getOrdersAndShow();

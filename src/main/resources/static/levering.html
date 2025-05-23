@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="nl-BE">
+<head>
+    <meta charset="UTF-8">
+    <title>Levering</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/levering.js" type="module"></script>
+</head>
+<body>
+
+<!-- Header with logo and page title -->
+<header>
+    <a href="introScreen.html" class="no-underline">
+        <img src="images/prularia-logo-wit.png" alt="Logo prularia" class="logo">
+    </a>
+    <h1>Levering verwerken</h1>
+</header>
+
+<main>
+    <!-- Main delivery form -->
+    <form id="inkomendeLeveringForm">
+
+        <!-- Section: Delivery Information -->
+        <h2>Leveringsgegevens</h2>
+        <fieldset>
+            <!-- Supplier dropdown selection -->
+            <div>
+                <label for="leverancier">Leverancier:</label>
+                <select id="leverancier" name="leverancier" required>
+                    <option value="">-- Selecteer een leverancier --</option>
+                </select>
+            </div>
+
+            <!-- Delivery note number -->
+            <div>
+                <label for="leveringsbonnummer">Leveringsbonnummer:</label>
+                <input type="text" id="leveringsbonnummer" name="leveringsbonnummer" autocomplete="off" required>
+            </div>
+
+            <!-- Delivery note date -->
+            <div>
+                <label for="leveringsbondatum">Datum leveringsbon:</label>
+                <input type="date" id="leveringsbondatum" name="leveringsbondatum" required>
+            </div>
+
+            <!-- Actual delivery date -->
+            <div>
+                <label for="leverdatum">Leverdatum:</label>
+                <input type="date" id="leverdatum" name="leverdatum" required>
+            </div>
+        </fieldset>
+
+        <br>
+
+        <!-- Section: Delivered Articles -->
+        <h2>Geleverde Artikelen</h2>
+        <fieldset id="articleContainer" hidden>
+            <table>
+                <thead>
+                <tr>
+                    <th>EAN</th>
+                    <th>Naam</th>
+                    <th>Aantal</th>
+                    <th>Aantal teruggestuurd</th>
+                    <th>Verwijder</th>
+                </tr>
+                </thead>
+                <tbody id="articleList"></tbody>
+            </table>
+        </fieldset>
+        <fieldset>
+            <table>
+                <thead>
+                <tr>
+                    <th>EAN</th>
+                    <th>Aantal</th>
+                    <th>Aantal teruggestuurd</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- First input row for delivered item -->
+                <tr>
+                    <td>
+                        <!-- EAN input field with datalist for suggestions -->
+                        <label for="eanInput-1" hidden>EAN-code</label>
+                        <div class="input-wrapper">
+                            <input type="text"
+                                   id="eanInput-1"
+                                   name="ean"
+                                   list="eanSuggesties"
+                                   class="ean-input"
+                                   placeholder="Voer EAN-code in"
+                                   autocomplete="off"
+                                   required>
+                            <div id="eanWarning" class="warning"></div>
+                        </div>
+                        <datalist id="eanSuggesties">
+                            <!-- Autocomplete options will be populated via JavaScript -->
+                        </datalist>
+                    </td>
+                    <td>
+                        <!-- Quantity input for delivered amount -->
+                        <label for="aantalInput-1" hidden>Aantal geleverd</label>
+                        <div class="input-wrapper">
+                            <input type="number"
+                                   id="aantalInput-1"
+                                   name="aantal"
+                                   class="aantal-input"
+                                   min="1"
+                                   placeholder="Aantal"
+                                   required>
+                            <div id="quantityGoodWarning" class="warning"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <label for="teruggestuurdInput-1" hidden>Aantal teruggestuurd</label>
+                        <div class="input-wrapper">
+                            <input type="number"
+                                   id="teruggestuurdInput-1"
+                                   name="teruggestuurd"
+                                   class="teruggestuurd-input"
+                                   min="0"
+                                   placeholder="Aantal terug"
+                                   required>
+                            <div id="quantityDamagedWarning" class="warning"></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Button to dynamically add more article rows -->
+            <div class="button-container">
+                <button type="button" class="button" id="artikelToevoegenKnop">Artikel toevoegen</button>
+            </div>
+        </fieldset>
+
+        <!-- Submit button for finalizing the delivery -->
+        <div class="button-container">
+            <button id="submitSupplier" type="submit" class="button">Levering opslaan</button>
+        </div>
+
+        <!-- Error message display -->
+        <p id="error" class="warning"></p>
+    </form>
+</main>
+
+</body>
+</html>

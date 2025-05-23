@@ -19,6 +19,8 @@ async function getOrdersAndCountAndShow() {
             byId("amountOrders").hidden = false;
 
             const orders = await ordersResponse.json();
+            const orderIds = orders.map((order) => order.id);
+
             const count = await countResponse.json();
 
             const tableBody = byId("tableBody");

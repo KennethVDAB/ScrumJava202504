@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class OrderRepositoryImpl implements OrderRepository {
@@ -17,7 +18,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         String sql = """
                 SELECT COUNT(*)
                 FROM Bestellingen
-                WHERE betaald = 1
+                WHERE betaald = TRUE
                 """;
 
         return jdbcClient.sql(sql)
@@ -60,5 +61,26 @@ public class OrderRepositoryImpl implements OrderRepository {
                 .param(orderId)
                 .query(OrderDetails.class)
                 .list();
+    }
+
+    public Optional<Order> findAndLockById(long orderId) {
+        String sql = """
+                SELECT bestelId as id, besteldatum as orderDate, klantId as customerId, betaald as paid, betalingscode as paymentCode, betaalwijzeId as paymentId, bestellingsStatusId as orderStatusId, actiecodeGebruikt as dealCodeUsed, bedrijfsnaam as companyName, btwNummer as BTWNumber, voornaam as firstName, familienaam as lastName, facturatieAdresId as paymentAddressId, leveringsAdresId as shippingAddressId
+                FROM bestellingen
+                WHERE bestelId = ?""";
+        return jdbcClient.sql(sql)
+                .param(orderId)
+                .query(Order.class)
+                .optional();
+    }
+
+    public void updateOrderStatus(long orderId, long orderStatusId) {
+        String sql = """
+                UPDATE bestellingen
+                SET bestellingsStatusId = ?
+                WHERE bestelId = ?""";
+        jdbcClient.sql(sql)
+                .params(orderStatusId, orderId)
+                .update();
     }
 }

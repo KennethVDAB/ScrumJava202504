@@ -3,7 +3,7 @@ package be.vdab.scrumjava202504.products;
 import be.vdab.scrumjava202504.exception.ProductNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/products")
@@ -22,5 +22,15 @@ public class ProductController {
             throw new ProductNotFoundException(artikelId);
         }
         return plaatsen;
+    }
+
+    @GetMapping("/{artikelId}/{shelf}/{position}")
+    public List<ProductDetails> findProductDetailsByArtikelIdAndPlace( @PathVariable long artikelId, @PathVariable String shelf, @PathVariable int position){
+        return productService.findProductDetailsByArtikelIdAndPlace(artikelId, shelf, position);
+    }
+
+    @GetMapping("/{ean}")
+    public SimpleProductDTO findProductByEanNumber(@PathVariable String ean){
+        return productService.findProductByEanNumber(ean);
     }
 }

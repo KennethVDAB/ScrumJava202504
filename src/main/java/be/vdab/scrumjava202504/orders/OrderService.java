@@ -1,13 +1,20 @@
 package be.vdab.scrumjava202504.orders;
 
+import be.vdab.scrumjava202504.exception.OrderNotFoundException;
 import be.vdab.scrumjava202504.products.ProductDTO;
 import be.vdab.scrumjava202504.products.ProductRepository;
 import be.vdab.scrumjava202504.util.LetterToNumber;
+import be.vdab.scrumjava202504.warehouseLocations.LocationNotFoundException;
+import be.vdab.scrumjava202504.warehouseLocations.WarehouseLocationRepository;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +36,7 @@ import java.util.stream.Collectors;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final WarehouseLocationRepository warehouseLocationRepository;
 
     /**
      * Constructs a new {@code OrderService} with the specified order and product repositories.
@@ -36,9 +44,10 @@ public class OrderService {
      * @param orderRepository   the repository used to retrieve order details
      * @param productRepository the repository used to retrieve product details and locations
      */
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, WarehouseLocationRepository warehouseLocationRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.warehouseLocationRepository = warehouseLocationRepository;
     }
 
     /**
@@ -66,12 +75,14 @@ public class OrderService {
      * calculates the optimal picking instructions based on route cost (including both shelf and position factors),
      * and returns an organized list of {@code PickingItem} objects sorted by shelf and position.
      *
-     * @param orderId the identifier of the order for which picking details are to be retrieved
      * @return a list of {@code PickingItem} objects, each representing a product location and the quantity to pick
      */
-    public List<PickingItem> getOrderDetailsByOrderId(long orderId) {
+    public List<PickingItem> getOrderDetailsByOrderId() {
+
+        DisplayOrder displayOrder = this.orderRepository.getDisplayOrders().getFirst();
+
         // Retrieve the products and their ordered quantities for the given order.
-        Map<Long, BigDecimal> orderedProductsWithQuantity = orderRepository.getOrderDetailsByOrderId(orderId)
+        Map<Long, BigDecimal> orderedProductsWithQuantity = orderRepository.getOrderDetailsByOrderId(displayOrder.getId())
                 .stream()
                 .collect(Collectors.toMap(OrderDetails::getProductId, OrderDetails::getQuantityOrder));
 
@@ -85,7 +96,7 @@ public class OrderService {
             List<ProductDTO> candidateLocations = productRepository.findByArtikelId(productId);
 
             // Calculate the picking items for this product using the new route cost method.
-            List<PickingItem> pickingItems = getEfficientPickingItemsForProduct(productId, quantityAsked, candidateLocations);
+            List<PickingItem> pickingItems = getEfficientPickingItemsForProduct(productId, quantityAsked, candidateLocations, displayOrder.getId());
 
             result.addAll(pickingItems);
         });
@@ -109,7 +120,7 @@ public class OrderService {
      * @param candidateLocations the list of available product locations
      * @return a list of {@code PickingItem} objects representing the selected product locations and the picked quantity
      */
-    private List<PickingItem> getEfficientPickingItemsForProduct(long productId, int quantityAsked, List<ProductDTO> candidateLocations) {
+    private List<PickingItem> getEfficientPickingItemsForProduct(long productId, int quantityAsked, List<ProductDTO> candidateLocations, long orderId) {
         // First, sort the locations based on the computed round-trip route cost.
         List<ProductDTO> sortedLocations = candidateLocations.stream()
                 .sorted(Comparator.comparingInt(this::calculateRouteCost))
@@ -135,7 +146,9 @@ public class OrderService {
                         candidate.getPosition(),
                         candidate.getName(),
                         qtyToPick,
-                        productId
+                        productId,
+                        orderId
+
                 ));
                 remaining -= qtyToPick;
             }
@@ -164,7 +177,7 @@ public class OrderService {
      * @param location the {@code ProductDTO} object representing the product location
      * @return the computed route cost (in steps) as an {@code int}
      */
-    private int calculateRouteCost(ProductDTO location) {
+    int calculateRouteCost(ProductDTO location) {
         // Retrieve the numeric value of the shelf letter using LetterToNumber.
         int shelfFactor = LetterToNumber.getNumberOfChar(location.getShelf().charAt(0));
 
@@ -172,5 +185,47 @@ public class OrderService {
         int positionCost = 2 * location.getPosition();
 
         return shelfFactor + positionCost;
+    }
+
+    /**
+     * Completes an order by updating stock levels and changing the order status.
+     *
+     * <p>
+     * This method retrieves an order by its ID, locks it, and processes the associated items.
+     * For each item:
+     * <ul>
+     *   <li>The ordered quantity is deducted from the product's stock.</li>
+     *   <li>The warehouse inventory levels are updated accordingly.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * If the order is not found, an {@link OrderNotFoundException} is thrown.
+     * If the warehouse location is not found, a {@link LocationNotFoundException} is thrown.
+     * </p>
+     *
+     * @param orderId The unique ID of the order.
+     * @throws OrderNotFoundException If the order is not found.
+     * @throws LocationNotFoundException If the warehouse location is not found.
+     */
+    @Transactional(readOnly = false)
+    public void finishOrder(@PositiveOrZero long orderId) {
+        this.orderRepository.findAndLockById(orderId).ifPresentOrElse(order -> {
+
+            this.getOrderDetailsByOrderId().forEach(pickingItem -> {
+                BigDecimal quantityOrdered = BigDecimal.valueOf(pickingItem.getPickedQuantity());
+
+                this.productRepository.updateStock(pickingItem.getProductId(), quantityOrdered);
+
+                this.warehouseLocationRepository.findBySelfAndPositionAndLockById(pickingItem.getShelf(), pickingItem.getPosition())
+                        .ifPresentOrElse(warehouseLocation -> {
+                            BigDecimal newAmount = warehouseLocation.getAmount().subtract(quantityOrdered);
+                            this.warehouseLocationRepository.updateAmount(pickingItem.getShelf(), pickingItem.getPosition(), newAmount);
+                        }, () -> { throw new LocationNotFoundException(pickingItem.getShelf(), pickingItem.getPosition()); });
+            });
+
+            this.orderRepository.updateOrderStatus(orderId, 5);
+
+        }, () -> { throw new OrderNotFoundException(orderId); });
     }
 }

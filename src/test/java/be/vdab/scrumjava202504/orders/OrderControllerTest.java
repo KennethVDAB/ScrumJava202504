@@ -29,4 +29,17 @@ public class OrderControllerTest {
                 .isEqualTo(JdbcTestUtils
                         .countRowsInTableWhere(jdbcClient, ORDERS_TABLE_NAME, "betaald = 1"));
     }
+
+    @Test
+    void findDisplayOrders_Success() {
+        var response = mockMvcTester.get()
+                .uri("/api/order/display");
+
+        assertThat(response)
+                .hasStatusOk()
+                .bodyJson()
+                .extractingPath("$.length()")
+                .satisfies(length -> assertThat((int) length).isLessThanOrEqualTo(5));
+    }
+
 }
