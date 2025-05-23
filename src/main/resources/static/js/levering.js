@@ -61,7 +61,7 @@ articleAddBtn.addEventListener("click", async () => {
     let hasError = false;
 
     const ean = eanInput.value.trim();
-    const quantityGood = quantityGoodInput.value.trim();
+    const quantityDelivered = quantityGoodInput.value.trim();
     const quantityDamaged = quantityDamagedInput.value.trim();
 
     if(!ean || (ean && !/^\d{13}$/.test(ean))) {
@@ -70,7 +70,7 @@ articleAddBtn.addEventListener("click", async () => {
         hasError = true;
     }
 
-    if(!quantityGood || isNaN(quantityGood) || Number(quantityGood) < 0) {
+    if(!quantityDelivered || isNaN(quantityDelivered) || Number(quantityDelivered) < 0) {
         quantityGoodInput.style.border = "1px solid rgb(204,121,167)";
         quantityGoodWarning.textContent = 'Aantal mag niet leeg zijn of negatief';
         hasError = true;
@@ -100,6 +100,9 @@ articleAddBtn.addEventListener("click", async () => {
             return;
         }
         const product = await response.json();
+
+        let quantityGood = quantityDelivered - quantityDamaged;
+
         storeArticle(product, quantityGood, quantityDamaged);
     } catch (error) {
         error.textContent = "Er is een probleem, probeer het later opnieuw!";
@@ -107,24 +110,34 @@ articleAddBtn.addEventListener("click", async () => {
     clearAllInputs();
 });
 
-function storeArticle (product, quantityGood, quantityDamaged) {
+function storeArticle(product, quantityGood, quantityDamaged) {
     let articles = JSON.parse(sessionStorage.getItem("articles")) || [];
+
     const exists = articles.some(article => article.productId === product.productId);
+
     if (exists) {
-        error.textContent = `Artikel ${product.name} is al toegevoegd.`
+        error.textContent = `Artikel ${product.name} is al toegevoegd.`;
         return;
     }
+
     const article = {
         productId: product.productId,
         ean: product.ean,
         name: product.name,
         quantityGood: quantityGood,
         quantityDamaged: quantityDamaged
-    }
+    };
+
     articles.push(article);
     sessionStorage.setItem("articles", JSON.stringify(articles));
+
+    let deliveredProducts = JSON.parse(sessionStorage.getItem("productData") || "{}");
+    deliveredProducts[product.productId] = parseInt(quantityGood);
+    sessionStorage.setItem("productData", JSON.stringify(deliveredProducts));
+
     addArticleToTable(article);
 }
+
 
 function addArticleToTable(article) {
     if (articleContainer.hidden) {
@@ -236,11 +249,13 @@ supplierSubmit.addEventListener("click", async (event) => {
             error.textContent = "Fout bij het opslaan van de levering.";
         }
         byId("inkomendeLeveringForm").reset();
-        //window.location.href
+        window.location.href = "/leveringRoute.html";
     } catch (error) {
         error.textContent = "Er is een probleem, probeer het later opnieuw!";
     }
 })
+
+
 
 
 

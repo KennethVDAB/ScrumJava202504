@@ -20,7 +20,6 @@ async function getOrdersAndCountAndShow() {
 
             const orders = await ordersResponse.json();
             const orderIds = orders.map((order) => order.id);
-            sessionStorage.setItem('orderIds', JSON.stringify(orderIds));
 
             const count = await countResponse.json();
 
