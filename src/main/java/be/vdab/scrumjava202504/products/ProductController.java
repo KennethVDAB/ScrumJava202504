@@ -30,7 +30,7 @@ public class ProductController {
     }
 
     @GetMapping("/{ean}")
-    public Optional<SimpleProductDTO> findProductByEanNumber(@PathVariable String ean){
+    public SimpleProductDTO findProductByEanNumber(@PathVariable String ean){
         return productService.findProductByEanNumber(ean);
     }
 }

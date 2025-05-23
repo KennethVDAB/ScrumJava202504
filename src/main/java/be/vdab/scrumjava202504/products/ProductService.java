@@ -1,6 +1,6 @@
 package be.vdab.scrumjava202504.products;
 
-import java.util.Optional;
+import be.vdab.scrumjava202504.exception.ProductWithEanNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,8 @@ public class ProductService {
         return productRepository.findProductDetailsByArtikelIdAndPlace(artikelid, shelf, row);
     }
 
-    public Optional<SimpleProductDTO> findProductByEanNumber(String ean) {
-        return productRepository.findProductByEanNumber(ean);
+    public SimpleProductDTO findProductByEanNumber(String ean) {
+        return productRepository.findProductByEanNumber(ean)
+                .orElseThrow(() -> new ProductWithEanNotFoundException(ean));
     }
 }

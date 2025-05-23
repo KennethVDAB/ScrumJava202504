@@ -21,4 +21,11 @@ public class ExceptionHandler {
         log.warn("Product not found: {}", ex.getMessage());
         return new ErrorResponse(ex.getMessage());
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundException(ProductWithEanNotFoundException ex) {
+        log.warn("Product with ean not found: {}", ex.getMessage());
+        return new ErrorResponse(ex.getMessage());
+    }
 }
